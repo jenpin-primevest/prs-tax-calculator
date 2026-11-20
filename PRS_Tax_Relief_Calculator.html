@@ -1,0 +1,1167 @@
+<!doctype html>
+<html lang="en-MY">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#243270" />
+<title>PRS Tax Savings Calculator | PPA PRS Calculator</title>
+<meta name="description" content="See how much income tax you can save by investing RM3,000 a year in a Private Retirement Scheme (PRS). Free, no sign-up." />
+<link rel="icon" type="image/png" href="https://prscalculator.ppa.my/ppa_prs-new.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+<style>
+  /* ---------- Tokens (match prscalculator.ppa.my) ---------- */
+  :root {
+    --brand: #243270;
+    --brand-2: #4b5aa0;
+    --ink: #0f172a;
+    --muted: #64748b;
+    --line: #e2e8f0;
+    --bg: #f8fafc;
+    --tint: #f8fafc;
+    --ring: rgba(36, 50, 112, .35);
+    --brand-soft: rgba(36, 50, 112, .08);
+    --save: #0f9f6e;
+    --save-soft: rgba(15, 159, 110, .1);
+    --pay: #b45309;
+    --radius-card: 20px;
+    --font-display: "Sora", "Inter", ui-sans-serif, system-ui, sans-serif;
+    --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-sans); line-height: 1.5;
+    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; overflow-x: clip;
+  }
+  a { color: inherit; }
+  button { font: inherit; }
+  [hidden] { display: none !important; }
+  :where(a, button, input, summary, label):focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+  .app-container { margin: 0 auto; max-width: 80rem; padding: 0 1rem; }
+  @media (min-width: 640px) { .app-container { padding: 0 1.5rem; } }
+  @media (min-width: 1024px) { .app-container { padding: 0 2rem; } }
+
+  /* ---------- Buttons ---------- */
+  .btn-primary, .btn-secondary {
+    display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border-radius: 12px;
+    padding: .75rem 2rem; font-weight: 600; text-decoration: none; cursor: pointer;
+    transition: filter .2s, transform .2s, box-shadow .2s, background .2s;
+  }
+  .btn-primary { color: #fff; border: 1px solid rgba(255,255,255,.35); background-image: linear-gradient(90deg, var(--brand), var(--brand-2)); box-shadow: 0 10px 26px rgba(36,50,112,.18); }
+  .btn-primary:hover { filter: brightness(1.05); transform: translateY(-1px); }
+  .btn-secondary { color: var(--ink); border: 1px solid rgba(148,163,184,.4); background: rgba(255,255,255,.65); }
+  .btn-secondary:hover { background: rgba(255,255,255,.85); transform: translateY(-1px); }
+  .btn-sm { padding: .6rem 1rem; font-size: .875rem; }
+
+  /* ---------- Header ---------- */
+  .prs-header { position: fixed; inset: 0 0 auto 0; z-index: 50; border-bottom: 1px solid transparent; transition: background .3s, border-color .3s, box-shadow .3s; }
+  .prs-header.is-compact { background: rgba(248,250,252,.72); border-bottom-color: rgba(226,232,240,.55); backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%); box-shadow: 0 4px 16px rgba(15,23,42,.06); }
+  .prs-header.menu-open { background: rgba(248,250,252,.96); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+  .header-row { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .65rem 0; transition: padding .3s; }
+  .is-compact .header-row { padding: .4rem 0; }
+  .logo img { display: block; height: 2.5rem; width: auto; transition: height .3s; }
+  .is-compact .logo img { height: 2rem; }
+  @media (min-width: 768px) { .logo img { height: 3rem; } .is-compact .logo img { height: 2.25rem; } }
+  .nav, .header-actions { display: none; align-items: center; gap: .4rem; }
+  .nav-pill { white-space: nowrap; border-radius: 1rem; padding: .625rem 1rem; font-size: .875rem; font-weight: 600; color: var(--muted); text-decoration: none; transition: color .15s, background .15s; }
+  .nav-pill:hover { color: var(--ink); background: rgba(255,255,255,.8); }
+  .nav-pill.is-active { background: var(--brand); color: #fff; }
+  .lang-toggle { display: inline-flex; border-radius: 12px; border: 1px solid rgba(226,232,240,.7); background: rgba(255,255,255,.7); padding: 4px; }
+  .lang-toggle button { border: 0; background: transparent; border-radius: 8px; padding: .375rem .625rem; font-size: .875rem; font-weight: 600; color: var(--muted); cursor: pointer; }
+  .lang-toggle button[aria-pressed="true"] { background: var(--brand); color: #fff; }
+  .menu-btn { display: inline-flex; border: 0; background: transparent; padding: .5rem; border-radius: 12px; color: var(--muted); cursor: pointer; }
+  .mobile-menu { display: none; padding: .5rem 0 1rem; gap: .375rem; }
+  .mobile-menu.is-open { display: grid; }
+  .mobile-menu .row { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin-top: .5rem; }
+  .mobile-menu .lang-toggle { grid-column: 1 / -1; justify-self: start; }
+  @media (min-width: 1024px) {
+    .nav, .header-actions { display: flex; }
+    .menu-btn, .mobile-menu.is-open { display: none; }
+  }
+
+  /* ---------- Background + hero ---------- */
+  .page-bg { position: relative; isolation: isolate; }
+  .aurora {
+    position: absolute; inset: -10% -10% auto -10%; height: 900px; pointer-events: none; z-index: -1; opacity: .85; filter: blur(30px) saturate(120%);
+    background: radial-gradient(60% 45% at 20% 15%, rgba(36,50,112,.18), transparent 70%), radial-gradient(55% 40% at 85% 25%, rgba(155,161,190,.25), transparent 70%), radial-gradient(45% 35% at 50% 90%, rgba(75,90,160,.12), transparent 75%);
+  }
+  .grid-pattern {
+    position: absolute; inset: 0 0 auto 0; height: 700px; pointer-events: none; z-index: -1; opacity: .45;
+    background-image: linear-gradient(rgba(36,50,112,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(36,50,112,.05) 1px, transparent 1px);
+    background-size: 44px 44px;
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 85%);
+            mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 85%);
+  }
+  main.app-container { padding-top: 4.5rem; }
+  .hero { text-align: center; padding: 2rem 0 1.75rem; }
+  .hero h1 { margin: 0 auto; max-width: 22ch; font-family: var(--font-display); font-weight: 600; color: var(--brand); font-size: clamp(1.6rem, 3.6vw + .7rem, 3.1rem); line-height: 1.1; letter-spacing: -.035em; text-wrap: balance; }
+  .hero p { margin: .9rem auto 0; max-width: 40rem; color: var(--muted); font-size: 1rem; line-height: 1.65; text-wrap: balance; }
+  @media (min-width: 768px) { main.app-container { padding-top: 5.5rem; } .hero { padding: 2.75rem 0 2.25rem; } .hero p { font-size: 1.125rem; } }
+
+  /* ---------- Layout + cards ---------- */
+  .calc-grid { display: grid; gap: 1.25rem; grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 960px) { .calc-grid { grid-template-columns: minmax(0, 7fr) minmax(0, 4.5fr); gap: 1.5rem; align-items: start; } }
+  .card { background: rgba(255,255,255,.92); border: 1px solid rgba(226,232,240,.9); border-radius: var(--radius-card); box-shadow: 0 8px 30px rgba(15,23,42,.06); padding: 1.25rem; min-width: 0; }
+  @media (min-width: 640px) { .card { padding: 1.75rem; } }
+  @media (max-width: 480px) { .card { padding: 1rem; } }
+  .card-title { display: flex; align-items: center; gap: .65rem; margin: 0 0 1.25rem; font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; color: var(--brand); letter-spacing: -.02em; }
+  .icon-tile { display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: .75rem; flex-shrink: 0; background: linear-gradient(135deg, rgba(36,50,112,.12), rgba(155,161,190,.15)); color: var(--brand); }
+  .block { padding-top: 3rem; }
+
+  /* ---------- Income input ---------- */
+  .label { display: block; font-size: .9375rem; font-weight: 600; margin-bottom: .6rem; }
+  .hint { margin: .5rem 0 0; font-size: .8125rem; color: var(--muted); }
+  .money-input { position: relative; }
+  .money-input span { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 600; pointer-events: none; }
+  .input-glass { width: 100%; background: rgba(255,255,255,.85); border: 1px solid rgba(148,163,184,.55); border-radius: 12px; box-shadow: inset 0 1px 2px rgba(0,0,0,.04); padding: .75rem 1rem .75rem 3rem; font-size: 1.125rem; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .input-glass:focus { outline: 3px solid var(--ring); outline-offset: 2px; border-color: var(--brand); }
+  .money-input.sm span { font-size: .875rem; left: .85rem; }
+  .money-input.sm .input-glass { font-size: .9375rem; padding: .6rem .85rem .6rem 2.6rem; }
+  input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; border-radius: 4px; margin: 1rem 0 .25rem; cursor: pointer; background: linear-gradient(90deg, var(--brand) 0 var(--pct, 0%), #e5e7eb var(--pct, 0%) 100%); }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--brand); border: 2px solid #fff; box-shadow: 0 2px 6px rgba(36,50,112,.35); }
+  input[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: var(--brand); border: 2px solid #fff; box-shadow: 0 2px 6px rgba(36,50,112,.35); }
+  .range-scale { display: flex; justify-content: space-between; font-size: .72rem; color: var(--muted); }
+  .chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1rem; }
+  .chip { border: 1px solid rgba(36,50,112,.15); background: #fff; color: var(--brand); border-radius: 999px; padding: .35rem .8rem; font-size: .8125rem; font-weight: 600; cursor: pointer; }
+  .chip:hover { background: var(--brand-soft); }
+  .chip.is-active { background: var(--brand); color: #fff; border-color: var(--brand); }
+
+  /* ---------- Tax reliefs panel ---------- */
+  .reliefs { margin-top: 1.5rem; }
+  .rl-head { display: flex; align-items: center; gap: .9rem; padding: 1rem 1.1rem; border-radius: 16px; cursor: pointer; border: 1px solid rgba(36,50,112,.14); background: linear-gradient(135deg, rgba(36,50,112,.06), rgba(155,161,190,.12)); transition: border-color .2s; }
+  .rl-head:hover { border-color: rgba(36,50,112,.3); }
+  .rl-head .icon-tile { background: #fff; box-shadow: 0 2px 8px rgba(36,50,112,.12); }
+  .rl-text { flex: 1; min-width: 0; }
+  .rl-title { display: block; font-family: var(--font-display); font-weight: 700; color: var(--brand); line-height: 1.3; }
+  .rl-sub { display: block; margin-top: .2rem; font-size: .8125rem; color: var(--muted); line-height: 1.45; }
+  .switch { position: relative; flex-shrink: 0; width: 44px; height: 26px; }
+  .switch input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+  .switch span { position: absolute; inset: 0; border-radius: 999px; background: #cbd5e1; transition: background .2s; pointer-events: none; }
+  .switch span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(15,23,42,.25); transition: transform .2s; }
+  .switch input:checked + span { background: var(--brand); }
+  .switch input:checked + span::after { transform: translateX(18px); }
+  .switch input:focus-visible + span { outline: 3px solid var(--ring); outline-offset: 2px; }
+  .rl-body { margin-top: .9rem; display: grid; gap: .75rem; }
+  @media (max-width: 480px) { .rl-head { padding: .85rem .9rem; } .rl-head .icon-tile { display: none; } .flow { padding: .75rem; } }
+
+  /* income − reliefs = chargeable income */
+  .flow { border-radius: 16px; background: #fff; border: 1px solid var(--line); padding: 1rem; }
+  .flow-grid { display: grid; grid-template-columns: minmax(0,1fr) 24px minmax(0,1fr) 24px minmax(0,1.15fr); gap: .5rem; }
+  .flow-item { border-radius: 12px; padding: .7rem .8rem; background: var(--tint); display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+  .flow-item span { font-size: .7rem; font-weight: 600; color: var(--muted); line-height: 1.3; }
+  .flow-item b { margin-top: .25rem; font-family: var(--font-display); font-size: 1.05rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .flow-item.minus b { color: var(--save); }
+  .flow-item.result { background: linear-gradient(135deg, var(--brand), var(--brand-2)); }
+  .flow-item.result span { color: rgba(255,255,255,.78); }
+  .flow-item.result b { color: #fff; font-size: 1.15rem; }
+  .flow-op { align-self: center; width: 24px; height: 24px; border-radius: 50%; background: var(--brand-soft); color: var(--brand); display: flex; align-items: center; justify-content: center; font-weight: 700; }
+  .flow-bar { margin-top: .85rem; display: flex; height: 8px; border-radius: 999px; overflow: hidden; background: #e5e7eb; }
+  .flow-bar i { transition: width .4s; }
+  .fb-ci { background: linear-gradient(90deg, var(--brand), var(--brand-2)); }
+  .fb-rel { background: var(--save); }
+  .flow-note { margin: .55rem 0 0; font-size: .72rem; color: var(--muted); }
+  @media (max-width: 560px) {
+    .flow-grid { grid-template-columns: minmax(0,1fr); gap: .35rem; }
+    .flow-op { justify-self: center; }
+    .flow-item { flex-direction: row; justify-content: space-between; align-items: center; gap: .75rem; }
+    .flow-item b { margin-top: 0; }
+  }
+
+  /* category cards */
+  .cat { border: 1px solid var(--line); border-radius: 16px; background: #fff; }
+  .cat[open] { border-color: rgba(36,50,112,.22); box-shadow: 0 6px 22px rgba(15,23,42,.05); }
+  .cat > summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: auto minmax(0,1fr) auto auto; align-items: center; gap: .75rem; padding: .75rem .9rem; border-radius: 16px; }
+  .cat > summary::-webkit-details-marker { display: none; }
+  .cat-icon { width: 2.25rem; height: 2.25rem; border-radius: .7rem; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(36,50,112,.12), rgba(155,161,190,.15)); color: var(--brand); }
+  .cat-title { display: block; font-size: .9rem; font-weight: 700; line-height: 1.3; }
+  .cat-meta { display: block; margin-top: .1rem; font-size: .72rem; color: var(--muted); }
+  .cat-total { justify-self: end; font-size: .8125rem; font-weight: 700; color: var(--save); background: var(--save-soft); padding: .25rem .65rem; border-radius: 999px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .cat-total.is-zero { color: var(--muted); background: #f1f5f9; font-weight: 600; }
+  .cat-chev { width: 28px; height: 28px; border-radius: 50%; background: #f1f5f9; color: var(--muted); display: flex; align-items: center; justify-content: center; transition: transform .2s; }
+  .cat[open] .cat-chev { transform: rotate(180deg); background: var(--brand-soft); color: var(--brand); }
+  .cat-body { margin: 0 .9rem; padding: 1rem 0 1.1rem; border-top: 1px dashed var(--line); display: grid; gap: 1.1rem; container-type: inline-size; }
+  @media (max-width: 520px) {
+    .cat > summary { grid-template-columns: auto auto minmax(0,1fr) auto; column-gap: .65rem; row-gap: .15rem; padding: .7rem .75rem; }
+    .cat-text { display: contents; }
+    .cat-icon { grid-row: 1 / span 2; }
+    .cat-title { grid-column: 2 / 4; grid-row: 1; }
+    .cat-meta { grid-column: 2; grid-row: 2; margin: 0; }
+    .cat-total { grid-column: 3; grid-row: 2; justify-self: start; font-size: .72rem; padding: .05rem .5rem; }
+    .cat-chev { grid-column: 4; grid-row: 1 / span 2; }
+    .cat-body { margin: 0 .75rem; }
+  }
+
+  /* fields: label / input / note line up across columns */
+  .fields, .toggles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)); column-gap: 1.25rem; }
+  .fields { row-gap: 1.1rem; }
+  .toggles { row-gap: .6rem; }
+  .field { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: .4rem; min-width: 0; }
+  @supports not (grid-template-rows: subgrid) { .field { display: flex; flex-direction: column; gap: .4rem; } }
+  @container (max-width: 480px) { .field { display: flex; flex-direction: column; gap: .4rem; } }
+  .f-head { display: flex; justify-content: space-between; align-items: flex-end; gap: .6rem; }
+  .f-label { font-size: .8125rem; font-weight: 600; line-height: 1.35; }
+  .f-cap { flex-shrink: 0; font-size: .68rem; font-weight: 600; color: var(--muted); background: #f1f5f9; border-radius: 999px; padding: .15rem .5rem; white-space: nowrap; }
+  .f-foot { margin: 0; display: flex; flex-direction: column; align-items: flex-start; gap: .35rem; font-size: .72rem; color: var(--muted); line-height: 1.45; }
+  .f-foot:empty { display: none; }
+  .f-auto { display: inline-flex; align-items: center; gap: .3rem; border: 1px solid rgba(36,50,112,.18); background: #fff; color: var(--brand); border-radius: 999px; padding: .2rem .6rem; font-size: .72rem; font-weight: 600; cursor: pointer; }
+  .f-auto:hover { background: var(--brand-soft); }
+  .input-locked { display: flex; align-items: center; justify-content: space-between; padding: .6rem .85rem; border-radius: 12px; background: #f1f5f9; border: 1px dashed rgba(148,163,184,.7); font-weight: 700; color: var(--brand); font-size: .9375rem; }
+  .input-locked svg { color: var(--muted); }
+
+  /* tick tiles for fixed-amount reliefs */
+  .toggle-tile { position: relative; display: flex; align-items: center; gap: .7rem; padding: .7rem .85rem; border: 1px solid var(--line); border-radius: 12px; cursor: pointer; background: #fff; }
+  .toggle-tile:hover { border-color: rgba(36,50,112,.3); }
+  .toggle-tile input { position: absolute; opacity: 0; pointer-events: none; }
+  .tt-check { width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid #cbd5e1; display: flex; align-items: center; justify-content: center; color: #fff; flex-shrink: 0; }
+  .tt-check svg { opacity: 0; }
+  .toggle-tile:has(input:checked) { border-color: var(--brand); background: rgba(36,50,112,.04); }
+  .toggle-tile input:checked ~ .tt-check { background: var(--brand); border-color: var(--brand); }
+  .toggle-tile input:checked ~ .tt-check svg { opacity: 1; }
+  .toggle-tile input:focus-visible ~ .tt-check { outline: 3px solid var(--ring); outline-offset: 2px; }
+  .tt-text { flex: 1; min-width: 0; font-size: .8125rem; font-weight: 600; line-height: 1.35; }
+  .tt-amt { font-size: .75rem; font-weight: 700; color: var(--brand); white-space: nowrap; }
+
+  /* children + housing */
+  .wide { display: grid; gap: .45rem; }
+  .kids-list { margin-top: .2rem; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .kid-row { display: grid; grid-template-columns: minmax(0,1fr) 7.25rem 7.25rem; align-items: center; gap: .75rem; padding: .6rem .75rem; }
+  .kid-row + .kid-row { border-top: 1px solid var(--line); }
+  .kid-head { background: var(--tint); padding-block: .45rem; }
+  .kid-head span { font-size: .68rem; font-weight: 700; color: var(--muted); text-align: center; }
+  .kid-label { font-size: .8125rem; line-height: 1.35; }
+  .kid-label small { display: block; margin-top: .1rem; font-size: .7rem; color: var(--muted); }
+  .kid-cap { display: none; font-size: .68rem; font-weight: 600; color: var(--muted); margin-bottom: .25rem; }
+  .stepper { display: grid; grid-template-columns: 32px minmax(0,1fr) 32px; align-items: center; height: 34px; border: 1px solid rgba(148,163,184,.55); border-radius: 10px; overflow: hidden; background: #fff; }
+  .stepper.has-val { border-color: var(--brand); }
+  .stepper button { height: 100%; border: 0; background: transparent; color: var(--brand); font-size: 1.05rem; font-weight: 700; cursor: pointer; }
+  .stepper button:hover:not(:disabled) { background: var(--brand-soft); }
+  .stepper button:disabled { color: #cbd5e1; cursor: default; }
+  .stepper output { text-align: center; font-weight: 700; font-size: .875rem; font-variant-numeric: tabular-nums; }
+  @media (max-width: 520px) {
+    .kid-row { grid-template-columns: minmax(0,1fr) minmax(0,1fr); row-gap: .5rem; }
+    .kid-label { grid-column: 1 / -1; }
+    .kid-head { display: none; }
+    .kid-row:nth-child(2) { border-top: 0; }
+    .kid-cap { display: block; }
+  }
+  .seg2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .6rem; }
+  .seg2 label { position: relative; display: flex; flex-direction: column; gap: .15rem; padding: .65rem .8rem; border: 1px solid var(--line); border-radius: 12px; cursor: pointer; background: #fff; }
+  .seg2 input { position: absolute; opacity: 0; pointer-events: none; }
+  .seg2 b { font-size: .78rem; font-weight: 600; line-height: 1.35; }
+  .seg2 small { font-size: .7rem; font-weight: 600; color: var(--muted); }
+  .seg2 label:has(input:checked) { border-color: var(--brand); background: rgba(36,50,112,.04); box-shadow: inset 0 0 0 1px var(--brand); }
+  .seg2 label:has(input:focus-visible) { outline: 3px solid var(--ring); outline-offset: 2px; }
+  @media (max-width: 420px) { .seg2 { grid-template-columns: minmax(0,1fr); } }
+  .sub-label { font-size: .75rem; font-weight: 600; color: var(--muted); margin-top: .15rem; }
+  .rl-foot { display: flex; justify-content: flex-end; }
+  .rl-reset { display: inline-flex; align-items: center; gap: .35rem; border: 0; background: none; padding: .25rem 0; font-size: .78rem; font-weight: 600; color: var(--muted); cursor: pointer; }
+  .rl-reset:hover { color: var(--ink); }
+
+  /* ---------- Result card ---------- */
+  .result-card { border-top: 3px solid var(--brand); }
+  @media (min-width: 640px) { .result-card { padding: 1.35rem 1.4rem; } }
+  @media (min-width: 960px) { .result-card { position: sticky; top: 5.5rem; } }
+  .tabs { display: grid; grid-template-columns: 1fr 1fr; padding: 4px; margin-bottom: 1rem; border-radius: 12px; background: #eef1f6; border: 1px solid rgba(226,232,240,.9); }
+  .tabs button { border: 0; background: transparent; padding: .5rem .75rem; border-radius: 9px; font-size: .8125rem; font-weight: 600; color: var(--muted); cursor: pointer; }
+  .tabs button[aria-selected="true"] { background: #fff; color: var(--brand); box-shadow: 0 1px 3px rgba(15,23,42,.1); }
+  .eyebrow { font-size: .68rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .headline { margin-top: .35rem; display: flex; align-items: baseline; flex-wrap: wrap; gap: .25rem .6rem; }
+  .big { font-family: var(--font-display); font-weight: 700; color: var(--save); letter-spacing: -.035em; font-size: clamp(2.4rem, 5vw + 1rem, 3rem); line-height: 1; font-variant-numeric: tabular-nums; }
+  .big-sub { font-size: .875rem; font-weight: 600; }
+  .cost-line { margin: .65rem 0 0; font-size: .875rem; }
+  .cost-line strong { color: var(--brand); }
+  .split-bar { margin-top: .8rem; display: flex; height: 10px; border-radius: 999px; overflow: hidden; background: #e5e7eb; }
+  .split-bar i { transition: width .5s; }
+  .s-save { background: var(--save); }
+  .s-cost { background: linear-gradient(90deg, var(--brand), var(--brand-2)); }
+  .split-legend { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .25rem 1rem; margin-top: .45rem; font-size: .75rem; color: var(--muted); }
+  .split-legend b { color: var(--ink); font-variant-numeric: tabular-nums; }
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: .35rem; }
+  .note { margin-top: .8rem; display: flex; gap: .6rem; align-items: flex-start; padding: .8rem .9rem; border-radius: 12px; font-size: .875rem; background: var(--brand-soft); border: 1px solid rgba(36,50,112,.12); color: var(--brand); }
+  .note svg { flex-shrink: 0; margin-top: 2px; }
+  .rate-row { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-top: .9rem; padding: .55rem .8rem; border-radius: 10px; background: var(--tint); border: 1px solid rgba(226,232,240,.95); }
+  .rate-text { font-size: .75rem; color: var(--muted); }
+  .rate-text b { color: var(--ink); font-weight: 600; }
+  @media (max-width: 480px) { .rate-text b { display: block; } .rate-sep { display: none; } }
+  .rate-row strong { font-family: var(--font-display); color: var(--brand); font-variant-numeric: tabular-nums; }
+  .cta { margin-top: 1rem; display: grid; gap: .5rem; }
+  .cta .btn-primary { padding: .75rem 1.25rem; font-size: .9375rem; }
+
+  /* "My tax" view */
+  .tv-label { margin-top: .45rem; font-size: .8125rem; font-weight: 600; color: var(--muted); }
+  .tv-amt { margin-top: .15rem; font-family: var(--font-display); font-size: clamp(2rem, 3vw + 1rem, 2.6rem); font-weight: 700; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; color: var(--pay); }
+  .tv-amt.zero { color: var(--brand); }
+  .tv-sec { margin-top: 1rem; padding-top: .9rem; border-top: 1px solid var(--line); }
+  .tv-h { display: flex; justify-content: space-between; align-items: baseline; gap: .75rem; margin-bottom: .55rem; font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .tv-h b { font-size: .78rem; letter-spacing: 0; text-transform: none; color: var(--ink); font-variant-numeric: tabular-nums; }
+  @media (max-width: 420px) { .tv-h { flex-direction: column; gap: .2rem; } }
+  .tier-bar { display: flex; gap: 2px; height: 10px; border-radius: 999px; overflow: hidden; }
+  .tier-bar i { min-width: 2px; }
+  .tier-list { margin: .65rem 0 0; padding: 0; list-style: none; display: grid; grid-template-columns: 10px minmax(0,1fr) auto auto; column-gap: .6rem; row-gap: .35rem; font-size: .78rem; font-variant-numeric: tabular-nums; }
+  .tier-list li { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: center; }
+  @supports not (grid-template-columns: subgrid) { .tier-list li { grid-template-columns: 10px minmax(0,1fr) 2.5rem 6.5rem; column-gap: .6rem; } }
+  .sw { width: 10px; height: 10px; border-radius: 3px; }
+  .tier-list .rt { text-align: right; color: var(--muted); font-weight: 600; }
+  .tier-list .tx { text-align: right; font-weight: 600; white-space: nowrap; padding-left: .5rem; }
+  .lines { display: grid; gap: .4rem; font-size: .8125rem; font-variant-numeric: tabular-nums; }
+  .line { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; color: var(--muted); }
+  .line b { font-weight: 600; color: var(--ink); white-space: nowrap; }
+  .line.strong, .line.total { color: var(--ink); font-weight: 700; }
+  .line.strong b, .line.total b { font-weight: 700; }
+  .line.total { margin-top: .2rem; padding-top: .6rem; border-top: 1px dashed var(--line); font-size: .9rem; }
+  .line.total b { color: var(--pay); }
+  .line.total.solo { margin-top: 0; padding-top: 0; border-top: 0; }
+  .tv-foot { margin: .8rem 0 0; font-size: .7rem; color: var(--muted); }
+  .tv-teaser { display: grid; justify-items: center; text-align: center; gap: .5rem; padding: .75rem 0 .25rem; }
+  .tv-teaser .icon-tile { width: 3rem; height: 3rem; border-radius: 1rem; }
+  .tv-teaser-title { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; color: var(--brand); }
+  .tv-teaser-sub { font-size: .8125rem; color: var(--muted); max-width: 26rem; }
+
+  /* ---------- Brackets table ---------- */
+  .table-sub { margin: -.85rem 0 1rem; font-size: .8125rem; color: var(--muted); }
+  table.brackets { width: 100%; border-collapse: collapse; font-size: .875rem; font-variant-numeric: tabular-nums; }
+  .brackets th { text-align: left; font-size: .75rem; font-weight: 600; color: var(--muted); padding: .65rem .75rem; background: var(--tint); border-bottom: 1px solid var(--line); white-space: nowrap; }
+  .brackets td { padding: .7rem .75rem; border-bottom: 1px solid var(--line); }
+  .brackets .num { text-align: right; }
+  .brackets td.save { color: var(--save); font-weight: 700; }
+  .brackets tbody tr { cursor: pointer; }
+  .brackets tbody tr:hover { background: var(--tint); }
+  .brackets tr.is-current { background: rgba(36,50,112,.06); box-shadow: inset 4px 0 0 var(--brand); }
+  .brackets tr.is-current td { font-weight: 700; color: var(--brand); }
+  .brackets tr.is-current td.save { color: var(--save); }
+  .you { display: inline-block; margin-left: .4rem; font-size: .65rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; background: var(--brand); color: #fff; padding: .15rem .45rem; border-radius: 6px; }
+  @media (max-width: 639px) {
+    table.brackets { font-size: .8125rem; }
+    .brackets th, .brackets td { padding-inline: .45rem; }
+    .brackets .cost-col { display: none; }
+    .you { display: block; width: max-content; margin: .25rem 0 0; }
+  }
+
+  /* ---------- Footer ---------- */
+  footer { margin-top: 4rem; padding: 2rem 0 2.5rem; border-top: 1px solid rgba(226,232,240,.8); background: rgba(255,255,255,.6); font-size: .75rem; color: var(--muted); line-height: 1.6; }
+  footer p { margin: .5rem 0 0; }
+  footer strong { color: var(--ink); }
+  footer hr { border: 0; border-top: 1px solid rgba(226,232,240,.8); margin: 1.25rem 0; }
+  .footer-row { display: grid; gap: 1rem; text-align: center; align-items: end; }
+  @media (min-width: 768px) { .footer-row { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+  .footer-row img { height: 2.75rem; width: auto; }
+  .footer-row a { text-decoration: none; }
+  .footer-row a:hover { text-decoration: underline; }
+  .sep { margin: 0 .6rem; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .fade-up { animation: fadeUp .5s ease-out both; }
+  .fade-up.d1 { animation-delay: .1s; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Icon sprite (lucide) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-piggy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2V5z"/><path d="M2 9v1c0 1.1.9 2 2 2h1"/><path d="M16 11h.01"/></symbol>
+    <symbol id="i-table" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol>
+    <symbol id="i-sparkles" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></symbol>
+    <symbol id="i-gift" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5"/></symbol>
+    <symbol id="i-calc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></symbol>
+  </defs>
+</svg>
+
+<header class="prs-header" id="header">
+  <div class="app-container">
+    <div class="header-row">
+      <a class="logo" href="https://www.ppa.my" target="_blank" rel="noopener noreferrer" aria-label="Open PPA website">
+        <img src="https://prscalculator.ppa.my/picture2.png" alt="PPA Logo" width="450" height="148" />
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a class="nav-pill" data-nav="home" data-i18n="nav.home"></a>
+        <a class="nav-pill" data-nav="savings" data-i18n="nav.savings"></a>
+        <a class="nav-pill" data-nav="drawdown" data-i18n="nav.drawdown"></a>
+        <a class="nav-pill is-active" href="#top" aria-current="page" data-i18n="nav.tax"></a>
+      </nav>
+      <div class="header-actions">
+        <div class="lang-toggle" role="group" data-i18n-aria="lang.label">
+          <button type="button" data-lang="en">EN</button>
+          <button type="button" data-lang="bm">BM</button>
+        </div>
+        <a class="btn-primary btn-sm" href="https://www.prsmember.my" target="_blank" rel="noopener noreferrer" data-i18n="nav.login"></a>
+        <a class="btn-secondary btn-sm" href="https://prsenrolment.ppa.my" target="_blank" rel="noopener noreferrer" data-i18n="nav.enrol"></a>
+      </div>
+      <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu">
+        <svg width="22" height="22"><use href="#i-menu"/></svg>
+      </button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a class="nav-pill" data-nav="home" data-i18n="nav.home"></a>
+      <a class="nav-pill" data-nav="savings" data-i18n="nav.savings"></a>
+      <a class="nav-pill" data-nav="drawdown" data-i18n="nav.drawdown"></a>
+      <a class="nav-pill is-active" href="#top" aria-current="page" data-i18n="nav.tax"></a>
+      <div class="row">
+        <div class="lang-toggle" role="group" data-i18n-aria="lang.label">
+          <button type="button" data-lang="en">EN</button>
+          <button type="button" data-lang="bm">BM</button>
+        </div>
+        <a class="btn-primary btn-sm" href="https://www.prsmember.my" target="_blank" rel="noopener noreferrer" data-i18n="nav.login"></a>
+        <a class="btn-secondary btn-sm" href="https://prsenrolment.ppa.my" target="_blank" rel="noopener noreferrer" data-i18n="nav.enrol"></a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="page-bg" id="top">
+  <div class="aurora" aria-hidden="true"></div>
+  <div class="grid-pattern" aria-hidden="true"></div>
+
+  <main class="app-container">
+    <section class="hero">
+      <h1 class="fade-up" data-i18n="hero.title"></h1>
+      <p class="fade-up d1" data-i18n="hero.sub"></p>
+    </section>
+
+    <div class="calc-grid">
+      <!-- Inputs -->
+      <section class="card" aria-labelledby="inputsTitle">
+        <h2 class="card-title" id="inputsTitle"><span class="icon-tile"><svg width="20" height="20"><use href="#i-piggy"/></svg></span><span data-i18n="in.title"></span></h2>
+        <label class="label" for="incomeInput" data-i18n="in.income"></label>
+        <div class="money-input"><span>RM</span><input class="input-glass" id="incomeInput" inputmode="numeric" autocomplete="off" /></div>
+        <input type="range" id="incomeRange" min="0" max="300000" step="1000" data-i18n-aria="in.income" />
+        <div class="range-scale"><span>RM0</span><span>RM300k+</span></div>
+        <p class="hint" data-i18n="in.incomeHint"></p>
+        <div class="chips" id="incomeChips"></div>
+
+        <!-- Tax reliefs: chargeable income per LHDN "Kalkulator Cukai TT 2025" -->
+        <div class="reliefs">
+          <label class="rl-head" for="reliefToggle">
+            <span class="icon-tile"><svg width="20" height="20"><use href="#i-calc"/></svg></span>
+            <span class="rl-text"><span class="rl-title" data-i18n="rl.title"></span><span class="rl-sub" data-i18n="rl.sub"></span></span>
+            <span class="switch"><input type="checkbox" id="reliefToggle" role="switch" /><span></span></span>
+          </label>
+          <div class="rl-body" id="reliefPanel" hidden></div>
+        </div>
+      </section>
+
+      <!-- Result -->
+      <section class="card result-card" id="resultCard" aria-label="Result">
+        <div class="tabs" role="tablist">
+          <button type="button" role="tab" id="tabSave" aria-controls="viewSave" data-tab="save" data-i18n="tab.save"></button>
+          <button type="button" role="tab" id="tabTax" aria-controls="viewTax" data-tab="tax" data-i18n="tab.tax"></button>
+        </div>
+
+        <div id="viewSave" role="tabpanel" aria-labelledby="tabSave" aria-live="polite">
+          <div class="eyebrow" data-i18n="r.eyebrow"></div>
+          <div class="headline"><span class="big" id="bigSaving">RM 0</span><span class="big-sub" data-i18n="r.bigSub"></span></div>
+          <p class="cost-line" id="costLine"></p>
+          <div class="split-bar" id="splitBar" role="img"><i class="s-save" id="splitSave"></i><i class="s-cost" id="splitCost"></i></div>
+          <div class="split-legend">
+            <span><i class="dot s-save"></i><span data-i18n="r.taxSaved"></span> <b id="legSave"></b></span>
+            <span><i class="dot s-cost"></i><span data-i18n="r.cost"></span> <b id="legCost"></b></span>
+          </div>
+          <div id="zeroNote"></div>
+          <div class="rate-row"><span class="rate-text"><b data-i18n="r.rate"></b><span class="rate-sep"> · </span><span id="rateSub"></span></span><strong id="rateValue"></strong></div>
+        </div>
+
+        <div id="viewTax" role="tabpanel" aria-labelledby="tabTax" aria-live="polite" hidden></div>
+
+        <div class="cta">
+          <a class="btn-primary" href="https://prsenrolment.ppa.my" target="_blank" rel="noopener noreferrer" data-track="start"><span data-i18n="cta.start"></span><svg width="18" height="18"><use href="#i-arrow"/></svg></a>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tax savings by bracket -->
+    <section class="block" aria-labelledby="bracketsTitle">
+      <div class="card">
+        <h2 class="card-title" id="bracketsTitle"><span class="icon-tile"><svg width="20" height="20"><use href="#i-table"/></svg></span><span data-i18n="tb.title"></span></h2>
+        <p class="table-sub" data-i18n="tb.sub"></p>
+        <table class="brackets">
+          <thead><tr>
+            <th id="tbBandHead"></th>
+            <th class="num" data-i18n="tb.rate"></th>
+            <th class="num" data-i18n="tb.saving"></th>
+            <th class="num cost-col" data-i18n="r.cost"></th>
+          </tr></thead>
+          <tbody id="bracketsBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer>
+  <div class="app-container">
+    <strong data-i18n="ftr.disc"></strong>
+    <p data-i18n="ftr.calc"></p>
+    <p data-i18n="ftr.body"></p>
+    <hr />
+    <div class="footer-row">
+      <div><a href="https://www.ppa.my" target="_blank" rel="noopener noreferrer" aria-label="Open PPA website"><img src="https://prscalculator.ppa.my/picture2.png" alt="PPA PRS" width="450" height="148" loading="lazy" /></a></div>
+      <div data-i18n="ftr.copy"></div>
+      <div><a href="https://www.ppa.my/terms-of-use/" target="_blank" rel="noopener noreferrer" data-i18n="ftr.terms"></a><span class="sep">|</span><a href="https://www.ppa.my/privacy-statement/" target="_blank" rel="noopener noreferrer" data-i18n="ftr.privacy"></a></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+"use strict";
+
+/* =====================================================================
+   1. TAX RULES — LHDN resident individual (rates YA 2024 onwards).
+   Update here when the Budget changes rates, rebates or caps.
+   ===================================================================== */
+const PRS_RELIEF = 3000;
+const BANDS = [ // [from, to, rate] — each band covers (from, to]
+  [0, 5000, 0], [5000, 20000, .01], [20000, 35000, .03], [35000, 50000, .06], [50000, 70000, .11],
+  [70000, 100000, .19], [100000, 400000, .25], [400000, 600000, .26], [600000, 2000000, .28], [2000000, Infinity, .30]
+];
+const REBATE = { limit: 35000, self: 400, spouse: 400 };
+
+const bandIndex = (ci) => BANDS.findIndex(([, to]) => ci <= to);
+const taxTiers = (ci) => BANDS
+  .map(([from, to, rate], i) => ({ i, rate, portion: Math.max(0, Math.min(ci, to) - from) }))
+  .filter((x) => x.portion > 0)
+  .map((x) => ({ ...x, tax: x.portion * x.rate }));
+
+/* Workbook rows C1–D4: income tax, rebates, tax charged (zakat, credits and PCB excluded). */
+function taxCharged(ci, spouseRelief) {
+  const incomeTax = taxTiers(ci).reduce((sum, x) => sum + x.tax, 0);                 // C3
+  const self = ci > 0 && ci <= REBATE.limit ? REBATE.self : 0;                       // D1
+  const spouse = spouseRelief && self ? REBATE.spouse : 0;                            // D2: spouse relief 4,000 + D1 400 = 4,400
+  return { ci, incomeTax, rebate: self + spouse, charged: Math.max(0, incomeTax - self - spouse) }; // D4
+}
+
+/* =====================================================================
+   2. RELIEFS — mirror "kalkulator-cukai-tahun-taksiran-2025.xlsx".
+   Caps follow the workbook's data-validation limits.
+   Chargeable income (B25) = MAX(0, income − approved donations (A13) − total relief (B24)).
+   PRS (B20) is preset to RM3,000; "without PRS" is the same calculation with B20 = 0.
+   ===================================================================== */
+const KIDS = [["u18", 2000], ["pre", 2000], ["deg", 8000], ["dis", 6000], ["disDeg", 14000]]; // Kalkulator Anak; 50% column = half
+const HOUSE_CAP = { 500: 7000, 750: 5000 };                                                   // Faedah Pinjaman Perumahan
+const GROUPS = [ // grouped by theme; items keep the workbook's B-order
+  { id: "auto",      icon: "i-user",     items: [{ id: "indiv", type: "fixed", amount: 9000 },                          // B1
+                                                 { id: "disabled", type: "check", amount: 7000 },                       // B4
+                                                 { id: "eduFees", cap: 7000 }] },                                       // B5
+  { id: "medical",   icon: "i-heart",    items: [{ id: "parents", cap: 8000 },                                          // B2
+                                                 { id: "equip", cap: 6000 },                                            // B3
+                                                 { id: "medSelf", cap: 10000 }] },                                      // B6–B9 (one input in workbook)
+  { id: "lifestyle", icon: "i-sparkles", items: [{ id: "lifestyle", cap: 2500 },                                        // B10
+                                                 { id: "sports", cap: 1000 },                                           // B11
+                                                 { id: "breast", cap: 1000 }] },                                        // B12
+  { id: "family",    icon: "i-users",    items: [{ id: "childcare", cap: 3000 },                                        // B13
+                                                 { id: "sspn", cap: 8000 },                                             // B14
+                                                 { id: "spouse", type: "check", amount: 4000 },                         // B15
+                                                 { id: "spouseDis", type: "check", amount: 6000 },                      // B16
+                                                 { id: "kids", type: "kids" }] },                                       // B17
+  { id: "epf",       icon: "i-wallet",   items: [{ id: "life", cap: 3000 },                                             // B18 (life insurance)
+                                                 { id: "epf", cap: 4000, auto: "epf" },                                 // B18 (EPF)
+                                                 { id: "prs", cap: PRS_RELIEF, preset: PRS_RELIEF, prs: true },         // B20
+                                                 { id: "eduMedIns", cap: 4000 },                                        // B21
+                                                 { id: "socso", cap: 350, auto: "socso" }] },                           // B22
+  { id: "home",      icon: "i-home",     items: [{ id: "house", type: "house" },                                        // B19
+                                                 { id: "ev", cap: 2500 }] },                                            // B23
+  { id: "donate",    icon: "i-gift",     items: [{ id: "donation", cap: Infinity, donation: true }] }                   // A13
+];
+const ITEMS = Object.fromEntries(GROUPS.flatMap((g) => g.items).map((it) => [it.id, it]));
+
+function itemValue(it, s) {
+  switch (it.type) {
+    case "fixed": return it.amount;
+    case "check": return s.ded[it.id] ? it.amount : 0;
+    case "kids":  return KIDS.reduce((sum, [k, full]) => sum + full * s.kids[k][0] + full / 2 * s.kids[k][1], 0);
+    case "house": return Math.min(HOUSE_CAP[s.house.band], s.house.amt);
+    default:      return Math.min(it.cap, s.ded[it.id] ?? it.preset ?? 0);
+  }
+}
+function chargeableIncome(s) {
+  let reliefs = 0, donations = 0, prs = 0;
+  const groupTotals = {};
+  for (const g of GROUPS) {
+    groupTotals[g.id] = 0;
+    for (const it of g.items) {
+      const v = itemValue(it, s);
+      groupTotals[g.id] += v;
+      if (it.donation) donations += v; else if (it.prs) prs += v; else reliefs += v;
+    }
+  }
+  const beforePrs = s.income - donations - reliefs;
+  return { donations, reliefs: reliefs + prs, prs, groupTotals, ci: Math.max(0, beforePrs - prs), ciWithoutPrs: Math.max(0, beforePrs) };
+}
+const AUTO_FILL = {
+  epf: (income) => Math.min(4000, Math.round(income * 0.11)),                                       // 11% employee share
+  socso: (income) => Math.min(350, Math.round(Math.min(income / 12, 6000) * 12 * 0.007))            // SOCSO + EIS ≈ 0.7%, wage ceiling RM6,000
+};
+
+/* Everything the page shows, from the current inputs. */
+function calculate(s) {
+  const relief = s.reliefsOn ? chargeableIncome(s) : null;
+  const base = relief ? relief.ci : s.income;
+  const idx = bandIndex(base);
+  const rate = BANDS[idx][2];
+  if (!relief) return { relief, base, idx, rate, prs: PRS_RELIEF, saving: PRS_RELIEF * rate };   // quick estimate: RM3,000 × top rate
+  const without = taxCharged(relief.ciWithoutPrs, s.ded.spouse);
+  const withPrs = taxCharged(relief.ci, s.ded.spouse);
+  return { relief, base, idx, rate, prs: relief.prs, without, withPrs, saving: without.charged - withPrs.charged };
+}
+
+/* =====================================================================
+   3. COPY (EN / BM). Footer legal text is PPA's original wording.
+   ===================================================================== */
+const I18N = {
+  en: {
+    "nav.home": "Home", "nav.savings": "Retirement Savings", "nav.drawdown": "Retirement Drawdown", "nav.tax": "Tax Savings",
+    "nav.login": "Login/Top Up", "nav.enrol": "Online Enrolment", "lang.label": "Language",
+    "hero.title": "How much tax can you save with PRS?",
+    "hero.sub": "Save up to RM900 in income tax every year by investing RM3,000 in PRS.",
+    "in.title": "Your income",
+    "in.income": "Annual Total Income",
+    "in.incomeHint": "Salary and bonus, before EPF and other deductions.",
+    "rl.title": "Add my tax reliefs",
+    "rl.sub": "EPF, insurance, children and more, for a more accurate result.",
+    "rl.income": "Annual Total Income", "rl.deduct": "Reliefs & donations", "rl.ci": "Chargeable income",
+    "rl.note": "Based on LHDN YA 2025 relief limits. PRS is set to the RM3,000 maximum by default.",
+    "rl.max": "up to RM{v}", "rl.noCap": "no limit", "rl.automatic": "Automatic", "rl.reset": "Clear all",
+    "rl.auto.epf": "Use 11% of my income", "rl.auto.socso": "Work it out for me",
+    "g.metaAuto": "Applies to everyone", "g.meta": "{n} added", "g.metaNone": "None added",
+    "g.auto": "Individual", "g.epf": "EPF, PRS & insurance", "g.lifestyle": "Lifestyle", "g.family": "Family",
+    "g.medical": "Medical", "g.home": "Home", "g.donate": "Donations",
+    "d.indiv": "Individual and dependent relatives",
+    "d.prs": "Private Retirement Scheme (PRS) and deferred annuity", "h.prs": "Set to RM3,000 by default. Change it to the amount you plan to contribute.",
+    "d.epf": "EPF contributions", "h.epf": "Compulsory and voluntary contributions.",
+    "d.life": "Life insurance premiums",
+    "d.eduMedIns": "Education and medical insurance",
+    "d.socso": "SOCSO contributions",
+    "d.lifestyle": "Lifestyle", "h.lifestyle": "Books, computer, smartphone, tablet, internet subscription and skills courses.",
+    "d.sports": "Lifestyle – sports", "h.sports": "Sports equipment, sports facility fees, competition fees and gym membership.",
+    "d.ev": "EV charging facilities or food waste composting machine",
+    "d.breast": "Breastfeeding equipment", "h.breast": "For a child aged 2 and below. Once every 2 years.",
+    "d.spouse": "Husband / wife / alimony to former wife",
+    "d.spouseDis": "Disabled husband / wife",
+    "d.kids": "Child relief", "h.kids": "Choose 50% if the claim is shared with your spouse.",
+    "k.full": "100% claim", "k.half": "50% claim", "k.each": "RM{v} each",
+    "k.u18": "Unmarried child under 18",
+    "k.pre": "Child 18+ in A-Level, certificate, matriculation or preparatory course",
+    "k.deg": "Child 18+ in diploma or higher (Malaysia)",
+    "k.dis": "Disabled child",
+    "k.disDeg": "Additional: disabled child in diploma or higher",
+    "d.childcare": "Child care centre or kindergarten fees", "h.childcare": "Registered centre, for a child aged 6 and below.",
+    "d.sspn": "Net deposit in SSPN",
+    "d.parents": "Medical treatment, special needs and carer for parents", "h.parents": "Includes full medical examination.",
+    "d.medSelf": "Medical expenses (self, spouse or child)", "h.medSelf": "Serious diseases, fertility treatment, vaccination, dental, medical examination, mental health, child learning disability and grandparents' care.",
+    "d.equip": "Basic supporting equipment for the disabled", "h.equip": "For self, spouse, child or parent.",
+    "d.disabled": "Disabled individual (OKU)",
+    "d.eduFees": "Education fees (self)", "h.eduFees": "Recognised courses, master's or doctorate. Upskilling courses up to RM2,000.",
+    "d.house": "Housing loan interest (first home)", "h.house": "Sale and purchase agreement signed from 2025 to 2027.",
+    "hs.500": "House price up to RM500,000", "hs.750": "House price RM500,001 to RM750,000", "hs.amt": "Interest paid",
+    "d.donation": "Approved donations and gifts",
+    "tab.save": "Tax savings", "tab.tax": "My tax",
+    "r.eyebrow": "Your tax savings from PRS", "r.bigSub": "less tax this year",
+    "r.costLine": "Your RM{p} in PRS costs you <strong>RM{n}</strong>.",
+    "r.costZero": "The full RM{p} goes into your retirement savings.",
+    "r.noPrs": "Enter a PRS amount in your tax reliefs to see your tax savings.",
+    "r.taxSaved": "Tax saved", "r.cost": "Your cost",
+    "r.zero": "No tax is charged at this income, so there is nothing to save yet. PRS still builds your retirement savings.",
+    "r.zeroRelief": "After reliefs and rebates, no tax is charged, so there is nothing to save yet. PRS still builds your retirement savings.",
+    "r.rate": "Your tax rate", "r.rateSub": "For income of RM{band}", "r.rateSubRelief": "On chargeable income of RM{ci}",
+    "tv.eyebrow": "Your income tax",
+    "tv.charged": "Tax charged", "tv.zero": "No tax charged",
+    "tv.calc": "Tax calculation", "tv.first": "On the first RM{v}", "tv.next": "Next RM{v}",
+    "tv.incomeTax": "Income tax", "tv.rebate": "Less: tax rebate",
+    "tv.foot": "Estimate based on LHDN YA 2025 rules. Excludes zakat, tax credits and PCB.",
+    "tv.teaserTitle": "See your full tax calculation",
+    "tv.teaserSub": "Add your tax reliefs to see your chargeable income and tax charged.",
+    "tb.title": "Tax savings by income bracket",
+    "tb.sub": "Based on RM3,000 in PRS. Tap a row to try it.",
+    "tb.rate": "Tax rate", "tb.saving": "Tax saved", "tb.you": "You", "tb.above": "Above {v}",
+    "cta.start": "Start contributing to PRS",
+    "ftr.disc": "DISCLAIMER:",
+    "ftr.calc": "This is an estimate, not tax advice. It assumes a Malaysian tax resident investing RM3,000 in PRS. Tax rates follow LHDN for YA 2024 onwards and reliefs follow YA 2025. Actual tax may differ.",
+    "ftr.body": "The contents contained in this website are for general illustrations. Users should therefore consider whether the contents on our website are applicable to their own situation, having regards to their objectives, financial situation and needs. The user should seek personal advice from their PRS Consultant for their own personal situations or circumstances. The contents in this website were prepared in good faith and the Private Pension Administrator Malaysia (PPA) expressly disclaims and accepts no liability whatsoever as to the accuracy, relevance, completeness or correctness of the information and opinion. The contents contained shall not be disseminated, reproduced or used either in part or in total without the prior approval from PPA.",
+    "ftr.copy": "Copyright © {y} Private Pension Administrator Malaysia [Registration No. 201201023964 (1008454-W)]. All Rights Reserved.",
+    "ftr.terms": "Terms of Use", "ftr.privacy": "Privacy Statement"
+  },
+  bm: {
+    "nav.home": "Laman Utama", "nav.savings": "Simpanan Persaraan", "nav.drawdown": "Pengeluaran Persaraan", "nav.tax": "Penjimatan Cukai",
+    "nav.login": "Log Masuk/Tambah Nilai", "nav.enrol": "Pendaftaran Online", "lang.label": "Bahasa",
+    "hero.title": "Berapa banyak cukai anda boleh jimat dengan PRS?",
+    "hero.sub": "Jimat sehingga RM900 cukai pendapatan setiap tahun dengan melabur RM3,000 dalam PRS.",
+    "in.title": "Pendapatan anda",
+    "in.income": "Jumlah Pendapatan Tahunan",
+    "in.incomeHint": "Gaji dan bonus, sebelum KWSP dan potongan lain.",
+    "rl.title": "Masukkan pelepasan cukai saya",
+    "rl.sub": "KWSP, insurans, anak dan lain-lain, untuk keputusan yang lebih tepat.",
+    "rl.income": "Jumlah Pendapatan Tahunan", "rl.deduct": "Pelepasan & derma", "rl.ci": "Pendapatan bercukai",
+    "rl.note": "Berdasarkan had pelepasan LHDN TT 2025. PRS ditetapkan pada had maksimum RM3,000 secara lalai.",
+    "rl.max": "maks RM{v}", "rl.noCap": "tiada had", "rl.automatic": "Automatik", "rl.reset": "Kosongkan semua",
+    "rl.auto.epf": "Guna 11% pendapatan saya", "rl.auto.socso": "Kira untuk saya",
+    "g.metaAuto": "Untuk semua", "g.meta": "{n} dimasukkan", "g.metaNone": "Belum dimasukkan",
+    "g.auto": "Individu", "g.epf": "KWSP, PRS & insurans", "g.lifestyle": "Gaya hidup", "g.family": "Keluarga",
+    "g.medical": "Perubatan", "g.home": "Kediaman", "g.donate": "Derma",
+    "d.indiv": "Individu dan saudara tanggungan",
+    "d.prs": "Skim Persaraan Swasta (PRS) dan anuiti tertangguh", "h.prs": "Ditetapkan RM3,000 secara lalai. Tukar kepada jumlah yang anda rancang untuk carum.",
+    "d.epf": "Caruman KWSP", "h.epf": "Caruman wajib dan sukarela.",
+    "d.life": "Premium insurans nyawa",
+    "d.eduMedIns": "Insurans pendidikan dan perubatan",
+    "d.socso": "Caruman PERKESO",
+    "d.lifestyle": "Gaya hidup", "h.lifestyle": "Buku, komputer, telefon pintar, tablet, langganan internet dan kursus kemahiran.",
+    "d.sports": "Gaya hidup – sukan", "h.sports": "Peralatan sukan, sewa fasiliti sukan, yuran pertandingan dan keahlian gimnasium.",
+    "d.ev": "Kemudahan pengecasan EV atau mesin kompos sisa makanan",
+    "d.breast": "Peralatan penyusuan ibu", "h.breast": "Untuk anak 2 tahun ke bawah. Sekali setiap 2 tahun.",
+    "d.spouse": "Suami / isteri / bayaran alimoni kepada bekas isteri",
+    "d.spouseDis": "Suami / isteri kurang upaya",
+    "d.kids": "Pelepasan anak", "h.kids": "Pilih 50% jika tuntutan dikongsi dengan pasangan.",
+    "k.full": "Tuntutan 100%", "k.half": "Tuntutan 50%", "k.each": "RM{v} seorang",
+    "k.u18": "Anak belum berkahwin bawah 18 tahun",
+    "k.pre": "Anak 18 tahun ke atas: A-Level, sijil, matrikulasi atau kursus persediaan",
+    "k.deg": "Anak 18 tahun ke atas: diploma ke atas (Malaysia)",
+    "k.dis": "Anak kurang upaya",
+    "k.disDeg": "Tambahan: anak kurang upaya di peringkat diploma ke atas",
+    "d.childcare": "Yuran taska atau tadika", "h.childcare": "Berdaftar, untuk anak 6 tahun ke bawah.",
+    "d.sspn": "Simpanan bersih SSPN",
+    "d.parents": "Rawatan perubatan, keperluan khas dan penjaga ibu bapa", "h.parents": "Termasuk pemeriksaan perubatan penuh.",
+    "d.medSelf": "Perbelanjaan perubatan (diri, pasangan atau anak)", "h.medSelf": "Penyakit serius, rawatan kesuburan, pemvaksinan, pergigian, pemeriksaan perubatan, kesihatan mental, kurang upaya pembelajaran anak dan penjagaan datuk nenek.",
+    "d.equip": "Peralatan sokongan asas untuk OKU", "h.equip": "Untuk diri, pasangan, anak atau ibu bapa.",
+    "d.disabled": "Individu kurang upaya (OKU)",
+    "d.eduFees": "Yuran pengajian (sendiri)", "h.eduFees": "Kursus diiktiraf, sarjana atau doktor falsafah. Kursus peningkatan kemahiran sehingga RM2,000.",
+    "d.house": "Faedah pinjaman perumahan (rumah pertama)", "h.house": "Perjanjian jual beli ditandatangani dari 2025 hingga 2027.",
+    "hs.500": "Harga rumah sehingga RM500,000", "hs.750": "Harga rumah RM500,001 hingga RM750,000", "hs.amt": "Faedah dibayar",
+    "d.donation": "Derma dan hadiah yang diluluskan",
+    "tab.save": "Penjimatan cukai", "tab.tax": "Cukai saya",
+    "r.eyebrow": "Penjimatan cukai anda daripada PRS", "r.bigSub": "kurang cukai tahun ini",
+    "r.costLine": "RM{p} dalam PRS hanya menelan kos <strong>RM{n}</strong>.",
+    "r.costZero": "Seluruh RM{p} masuk ke simpanan persaraan anda.",
+    "r.noPrs": "Masukkan jumlah PRS dalam pelepasan cukai untuk melihat penjimatan.",
+    "r.taxSaved": "Cukai dijimat", "r.cost": "Kos anda",
+    "r.zero": "Tiada cukai dikenakan pada pendapatan ini, jadi belum ada yang boleh dijimat. PRS tetap membina simpanan persaraan anda.",
+    "r.zeroRelief": "Selepas pelepasan dan rebat, tiada cukai dikenakan, jadi belum ada yang boleh dijimat. PRS tetap membina simpanan persaraan anda.",
+    "r.rate": "Kadar cukai anda", "r.rateSub": "Untuk pendapatan RM{band}", "r.rateSubRelief": "Atas pendapatan bercukai RM{ci}",
+    "tv.eyebrow": "Cukai pendapatan anda",
+    "tv.charged": "Cukai dikenakan", "tv.zero": "Tiada cukai dikenakan",
+    "tv.calc": "Pengiraan cukai", "tv.first": "RM{v} pertama", "tv.next": "RM{v} berikutnya",
+    "tv.incomeTax": "Cukai pendapatan", "tv.rebate": "Tolak: rebat cukai",
+    "tv.foot": "Anggaran berdasarkan peraturan LHDN TT 2025. Tidak termasuk zakat, kredit cukai dan PCB.",
+    "tv.teaserTitle": "Lihat pengiraan cukai penuh anda",
+    "tv.teaserSub": "Masukkan pelepasan cukai untuk melihat pendapatan bercukai dan cukai dikenakan.",
+    "tb.title": "Penjimatan cukai mengikut banjaran pendapatan",
+    "tb.sub": "Berdasarkan RM3,000 dalam PRS. Tekan satu baris untuk cuba.",
+    "tb.rate": "Kadar cukai", "tb.saving": "Cukai dijimat", "tb.you": "Anda", "tb.above": "Melebihi {v}",
+    "cta.start": "Mula mencarum dalam PRS",
+    "ftr.disc": "PENAFIAN:",
+    "ftr.calc": "Ini anggaran sahaja, bukan nasihat cukai. Ia mengandaikan pemastautin cukai Malaysia yang melabur RM3,000 dalam PRS. Kadar cukai ikut LHDN TT 2024 dan seterusnya, manakala pelepasan ikut TT 2025. Cukai sebenar mungkin berbeza.",
+    "ftr.body": "Kandungan di laman web ini disediakan untuk tujuan gambaran am sahaja. Pengguna dinasihatkan untuk mempertimbangkan kesesuaian maklumat tersebut dengan situasi, objektif, kedudukan kewangan, dan keperluan peribadi masing-masing. Pengguna juga disarankan untuk mendapatkan nasihat profesional daripada Perunding PRS sebelum membuat sebarang keputusan. Segala kandungan di portal ini disediakan berasaskan maklumat sedia ada yang dipercayai sahih. Private Pension Administrator Malaysia (PPA) secara nyata menafikan sebarang liabiliti terhadap ketepatan, perkaitan, kelengkapan, atau kesahihan maklumat serta pandangan yang dinyatakan. Kandungan ini tidak dibenarkan untuk disebar luas, diterbitkan semula, atau digunakan secara sebahagian mahupun keseluruhan tanpa kelulusan bertulis terlebih dahulu daripada PPA.",
+    "ftr.copy": "Hak Cipta © {y} Private Pension Administrator Malaysia [No. Pendaftaran 201201023964 (1008454-W)]. Hak Cipta Terpelihara.",
+    "ftr.terms": "Terma Penggunaan", "ftr.privacy": "Penyata Privasi"
+  }
+};
+const NAV_PATHS = { en: { home: "/", savings: "/savings", drawdown: "/drawdown" }, bm: { home: "/", savings: "/simpanan", drawdown: "/pengeluaran" } };
+const PRESETS = [30000, 50000, 75000, 120000, 250000];
+
+/* =====================================================================
+   4. STATE — saved in the browser only.
+   ===================================================================== */
+const STORE_KEY = "ppa-prs-tax-calculator";
+const freshKids = () => Object.fromEntries(KIDS.map(([k]) => [k, [0, 0]]));
+const defaults = () => ({ lang: "en", income: 75000, reliefsOn: false, ded: {}, kids: freshKids(), house: { band: "500", amt: 0 }, tab: "save" });
+const ALLOWED = { lang: ["en", "bm"], tab: ["save", "tax"] };
+
+function loadState() {
+  const s = defaults();
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORE_KEY)) || {};
+    for (const k of Object.keys(s)) {
+      if (typeof saved[k] !== typeof s[k] || (ALLOWED[k] && !ALLOWED[k].includes(saved[k]))) continue;
+      s[k] = saved[k];
+    }
+    s.kids = Object.assign(freshKids(), s.kids);
+    s.house = Object.assign({ band: "500", amt: 0 }, s.house);
+  } catch { /* storage unavailable or corrupt: use defaults */ }
+  return s;
+}
+const state = loadState();
+const save = () => { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch { /* ignore */ } };
+
+/* =====================================================================
+   5. HELPERS
+   ===================================================================== */
+const YEAR = new Date().getFullYear();
+const $ = (id) => document.getElementById(id);
+const fmt = (n) => Math.round(n).toLocaleString("en-MY");
+const fmt2 = (n) => n.toLocaleString("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const rm = (n) => "RM " + fmt(n);
+const rm2 = (n) => "RM " + fmt2(n);
+const pct = (r) => Math.round(r * 100) + "%";
+const parseNum = (v) => { const n = parseFloat(String(v).replace(/[^\d.]/g, "")); return Number.isFinite(n) ? n : 0; };
+const icon = (id, size = 16) => `<svg width="${size}" height="${size}" aria-hidden="true"><use href="#${id}"/></svg>`;
+const tierColor = (i) => i === 0 ? "#dbe2ee" : `rgba(36,50,112,${(0.2 + i * 0.09).toFixed(2)})`;
+
+function t(key, vars = {}) {
+  let s = I18N[state.lang][key] ?? I18N.en[key] ?? key;
+  for (const [k, v] of Object.entries(vars)) s = s.replaceAll(`{${k}}`, v);
+  return s;
+}
+const hint = (id) => I18N.en["h." + id] ? t("h." + id) : "";
+function bandLabel(i) {
+  const [from, to] = BANDS[i];
+  return to === Infinity ? t("tb.above", { v: fmt(from) }) : `${i ? fmt(from + 1) : 0} – ${fmt(to)}`;
+}
+function setRange(el, v) {
+  const min = +el.min, max = +el.max, c = Math.min(max, Math.max(min, v));
+  el.value = c;
+  el.style.setProperty("--pct", ((c - min) / (max - min)) * 100 + "%");
+}
+
+/* =====================================================================
+   6. TEMPLATES — tax reliefs panel
+   ===================================================================== */
+const openGroups = new Set(["epf"]);
+
+function fieldHTML(it) {
+  if (it.type === "fixed") {
+    return `<div class="field">
+      <div class="f-head"><span class="f-label">${t("d." + it.id)}</span><span class="f-cap">${t("rl.automatic")}</span></div>
+      <div class="input-locked"><span>${rm(it.amount)}</span>${icon("i-lock", 15)}</div>
+      <p class="f-foot"></p></div>`;
+  }
+  const v = itemValue(it, state);
+  const autoBtn = it.auto ? `<button type="button" class="f-auto" data-auto="${it.id}">${icon("i-calc", 12)}${t("rl.auto." + it.auto)}</button>` : "";
+  const note = hint(it.id) ? `<span>${hint(it.id)}</span>` : "";
+  return `<div class="field">
+    <div class="f-head"><label class="f-label" for="d-${it.id}">${t("d." + it.id)}</label><span class="f-cap">${Number.isFinite(it.cap) ? t("rl.max", { v: fmt(it.cap) }) : t("rl.noCap")}</span></div>
+    <div class="money-input sm"><span>RM</span><input class="input-glass" id="d-${it.id}" data-ded="${it.id}" inputmode="numeric" autocomplete="off" placeholder="0" value="${v ? fmt(v) : ""}" /></div>
+    <p class="f-foot">${autoBtn}${note}</p></div>`;
+}
+const toggleHTML = (it) => `<label class="toggle-tile"><input type="checkbox" data-check="${it.id}" ${state.ded[it.id] ? "checked" : ""} />
+  <span class="tt-check">${icon("i-check", 12)}</span><span class="tt-text">${t("d." + it.id)}</span><span class="tt-amt">${rm(it.amount)}</span></label>`;
+
+function stepperHTML(k, col) {
+  const v = state.kids[k][col], label = t(col ? "k.half" : "k.full");
+  return `<div><span class="kid-cap">${label}</span>
+    <div class="stepper${v ? " has-val" : ""}" data-kid="${k}" data-col="${col}" role="group" aria-label="${t("k." + k)}, ${label}">
+      <button type="button" data-step="-1" aria-label="−" ${v ? "" : "disabled"}>−</button><output>${v}</output><button type="button" data-step="1" aria-label="+">+</button>
+    </div></div>`;
+}
+function kidsHTML() {
+  const rows = KIDS.map(([k, full]) => `<div class="kid-row"><div class="kid-label">${t("k." + k)}<small>${t("k.each", { v: fmt(full) })}</small></div>${stepperHTML(k, 0)}${stepperHTML(k, 1)}</div>`).join("");
+  return `<div class="wide">
+    <div class="f-head"><span class="f-label">${t("d.kids")}</span></div>
+    <p class="f-foot">${t("h.kids")}</p>
+    <div class="kids-list"><div class="kid-row kid-head"><span></span><span>${t("k.full")}</span><span>${t("k.half")}</span></div>${rows}</div>
+  </div>`;
+}
+function houseHTML() {
+  const amt = state.house.amt ? fmt(Math.min(HOUSE_CAP[state.house.band], state.house.amt)) : "";
+  const options = Object.keys(HOUSE_CAP).map((b) => `<label><input type="radio" name="houseBand" data-house-band="${b}" ${state.house.band === b ? "checked" : ""} />
+    <b>${t("hs." + b)}</b><small>${t("rl.max", { v: fmt(HOUSE_CAP[b]) })}</small></label>`).join("");
+  return `<div class="wide">
+    <div class="f-head"><span class="f-label">${t("d.house")}</span></div>
+    <p class="f-foot">${t("h.house")}</p>
+    <div class="seg2">${options}</div>
+    <label class="sub-label" for="houseAmt">${t("hs.amt")}</label>
+    <div class="money-input sm"><span>RM</span><input class="input-glass" id="houseAmt" data-house-amt inputmode="numeric" autocomplete="off" placeholder="0" value="${amt}" /></div>
+  </div>`;
+}
+/* Keep item order; consecutive amount fields / tick tiles share one grid. */
+function groupBodyHTML(g) {
+  const parts = [];
+  for (const it of g.items) {
+    if (it.type === "kids") { parts.push(kidsHTML()); continue; }
+    if (it.type === "house") { parts.push(houseHTML()); continue; }
+    const kind = it.type === "check" ? "toggles" : "fields";
+    const last = parts[parts.length - 1];
+    const html = kind === "toggles" ? toggleHTML(it) : fieldHTML(it);
+    if (last && last.kind === kind) last.html.push(html); else parts.push({ kind, html: [html] });
+  }
+  return parts.map((p) => typeof p === "string" ? p : `<div class="${p.kind}">${p.html.join("")}</div>`).join("");
+}
+function buildReliefPanel() {
+  $("reliefToggle").checked = state.reliefsOn;
+  $("reliefPanel").hidden = !state.reliefsOn;
+  $("reliefPanel").innerHTML = `
+    <div class="flow" aria-live="polite">
+      <div class="flow-grid">
+        <div class="flow-item"><span>${t("rl.income")}</span><b id="flowIncome"></b></div>
+        <div class="flow-op" aria-hidden="true">−</div>
+        <div class="flow-item minus"><span>${t("rl.deduct")}</span><b id="flowDeduct"></b></div>
+        <div class="flow-op" aria-hidden="true">=</div>
+        <div class="flow-item result"><span>${t("rl.ci")}</span><b id="flowCi"></b></div>
+      </div>
+      <div class="flow-bar" aria-hidden="true"><i class="fb-ci" id="fbCi"></i><i class="fb-rel" id="fbRel"></i></div>
+      <p class="flow-note">${t("rl.note")}</p>
+    </div>
+    ${GROUPS.map((g) => `<details class="cat" data-group="${g.id}" ${openGroups.has(g.id) ? "open" : ""}>
+      <summary>
+        <span class="cat-icon">${icon(g.icon, 18)}</span>
+        <span class="cat-text"><span class="cat-title">${t("g." + g.id)}</span><span class="cat-meta" data-meta="${g.id}"></span></span>
+        <span class="cat-total" data-total="${g.id}"></span>
+        <span class="cat-chev">${icon("i-chevron")}</span>
+      </summary>
+      <div class="cat-body">${groupBodyHTML(g)}</div></details>`).join("")}
+    <div class="rl-foot"><button type="button" class="rl-reset" id="reliefReset">${icon("i-reset", 14)}${t("rl.reset")}</button></div>`;
+}
+
+/* =====================================================================
+   7. RENDER
+   ===================================================================== */
+function applyStaticText() {
+  document.documentElement.lang = state.lang === "bm" ? "ms-MY" : "en-MY";
+  document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t(el.dataset.i18n, { y: YEAR }); });
+  document.querySelectorAll("[data-i18n-aria]").forEach((el) => el.setAttribute("aria-label", t(el.dataset.i18nAria)));
+  document.querySelectorAll("[data-lang]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === state.lang)));
+  document.querySelectorAll("[data-nav]").forEach((a) => { a.href = "https://prscalculator.ppa.my" + NAV_PATHS[state.lang][a.dataset.nav]; });
+  buildReliefPanel();
+}
+
+function renderInputs() {
+  const input = $("incomeInput");
+  if (document.activeElement !== input) input.value = fmt(state.income);
+  setRange($("incomeRange"), state.income);
+  $("incomeChips").innerHTML = PRESETS.map((v) =>
+    `<button type="button" class="chip${state.income === v ? " is-active" : ""}" data-chip="${v}">RM${v / 1000}k</button>`).join("");
+}
+
+function renderReliefSummary({ relief }) {
+  if (!relief) return;
+  const deducted = Math.min(relief.donations + relief.reliefs, state.income);
+  const ciPct = state.income > 0 ? (relief.ci / state.income) * 100 : 0;
+  $("flowIncome").textContent = rm(state.income);
+  $("flowDeduct").textContent = rm(deducted);
+  $("flowCi").textContent = rm(relief.ci);
+  $("fbCi").style.width = ciPct + "%";
+  $("fbRel").style.width = (state.income > 0 ? 100 - ciPct : 0) + "%";
+  for (const g of GROUPS) {
+    const total = relief.groupTotals[g.id];
+    const pill = document.querySelector(`[data-total="${g.id}"]`);
+    pill.textContent = rm(total);
+    pill.classList.toggle("is-zero", total <= 0);
+    const n = g.items.filter((it) => it.type !== "fixed" && itemValue(it, state) > 0).length;
+    document.querySelector(`[data-meta="${g.id}"]`).textContent = n ? t("g.meta", { n }) : t(g.id === "auto" ? "g.metaAuto" : "g.metaNone");
+  }
+}
+
+let shownSaving = 0, animFrame = 0;
+function animateSaving(to) {
+  cancelAnimationFrame(animFrame);
+  const from = shownSaving, start = performance.now();
+  const instant = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const step = (now) => {
+    const p = instant ? 1 : Math.min(1, (now - start) / 450);
+    $("bigSaving").textContent = rm(from + (to - from) * (1 - (1 - p) ** 3));
+    if (p < 1) animFrame = requestAnimationFrame(step); else shownSaving = to;
+  };
+  animFrame = requestAnimationFrame(step);
+}
+
+function renderSaving({ relief, base, idx, rate, prs, saving, without }) {
+  const cost = prs - saving;
+  const savePct = prs > 0 ? (saving / prs) * 100 : 0;
+  animateSaving(saving);
+  $("costLine").innerHTML = !prs ? t("r.noPrs") : t(saving > 0 ? "r.costLine" : "r.costZero", { p: fmt(prs), n: fmt(cost) });
+  $("splitSave").style.width = savePct + "%";
+  $("splitCost").style.width = (prs > 0 ? 100 - savePct : 0) + "%";
+  $("splitBar").setAttribute("aria-label", `${t("r.taxSaved")} ${rm(saving)}, ${t("r.cost")} ${rm(cost)}`);
+  $("legSave").textContent = rm(saving);
+  $("legCost").textContent = rm(cost);
+  const noTax = relief ? without.charged <= 0 : rate === 0;
+  $("zeroNote").innerHTML = noTax ? `<div class="note">${icon("i-info", 18)}<div>${t(relief ? "r.zeroRelief" : "r.zero")}</div></div>` : "";
+  $("rateValue").textContent = pct(rate);
+  $("rateSub").textContent = relief ? t("r.rateSubRelief", { ci: fmt(base) }) : t("r.rateSub", { band: bandLabel(idx) });
+}
+
+function renderTaxView({ relief, withPrs }) {
+  const view = $("viewTax");
+  if (!relief) {
+    view.innerHTML = `<div class="tv-teaser">
+      <span class="icon-tile">${icon("i-calc", 22)}</span>
+      <div class="tv-teaser-title">${t("tv.teaserTitle")}</div>
+      <div class="tv-teaser-sub">${t("tv.teaserSub")}</div>
+      <button type="button" class="btn-secondary btn-sm" id="tvEnable">${t("rl.title")}</button></div>`;
+    return;
+  }
+  const s = withPrs;   // tax on the reliefs entered, PRS included
+  const label = s.charged > 0 ? t("tv.charged") : t("tv.zero");
+  const tiers = taxTiers(s.ci);
+  const bar = tiers.map((x) => `<i style="width:${(x.portion / s.ci) * 100}%;background:${tierColor(x.i)}"></i>`).join("");
+  const rows = tiers.map((x, k) => `<li><span class="sw" style="background:${tierColor(x.i)}"></span>
+    <span>${t(k ? "tv.next" : "tv.first", { v: fmt(x.portion) })}</span><span class="rt">${pct(x.rate)}</span><span class="tx">${rm2(x.tax)}</span></li>`).join("");
+  const lines = s.rebate
+    ? `<div class="line strong"><span>${t("tv.incomeTax")}</span><b>${rm2(s.incomeTax)}</b></div>
+       <div class="line"><span>${t("tv.rebate")}</span><b>− ${rm2(s.rebate)}</b></div>
+       <div class="line total"><span>${label}</span><b>${rm2(s.charged)}</b></div>`
+    : `<div class="line total solo"><span>${label}</span><b>${rm2(s.charged)}</b></div>`;
+
+  view.innerHTML = `
+    <div class="eyebrow">${t("tv.eyebrow")}</div>
+    <div class="tv-label">${label}</div>
+    <div class="tv-amt${s.charged > 0 ? "" : " zero"}">${rm(s.charged)}</div>
+    ${tiers.length ? `<div class="tv-sec">
+      <div class="tv-h"><span>${t("tv.calc")}</span><b>${t("rl.ci")} ${rm(s.ci)}</b></div>
+      <div class="tier-bar" aria-hidden="true">${bar}</div>
+      <ul class="tier-list">${rows}</ul>
+    </div>` : ""}
+    <div class="tv-sec lines">${lines}</div>
+    <p class="tv-foot">${t("tv.foot")}</p>`;
+}
+
+function renderTabs() {
+  document.querySelectorAll("[data-tab]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.tab === state.tab)));
+  $("viewSave").hidden = state.tab !== "save";
+  $("viewTax").hidden = state.tab !== "tax";
+}
+
+function renderTable({ relief, idx }) {
+  $("tbBandHead").textContent = `${t(relief ? "rl.ci" : "in.income")} (RM)`;
+  $("bracketsBody").innerHTML = BANDS.map(([, , r], i) => {
+    const saved = PRS_RELIEF * r, current = i === idx;
+    return `<tr class="${current ? "is-current" : ""}" data-band="${i}">
+      <td>${bandLabel(i)}${current ? `<span class="you">${t("tb.you")}</span>` : ""}</td>
+      <td class="num">${pct(r)}</td><td class="num save">${rm(saved)}</td><td class="num cost-col">${rm(PRS_RELIEF - saved)}</td></tr>`;
+  }).join("");
+}
+
+let result;
+function render() {
+  result = calculate(state);
+  renderInputs();
+  renderReliefSummary(result);
+  renderSaving(result);
+  renderTabs();
+  renderTaxView(result);
+  renderTable(result);
+}
+function update() { save(); render(); }
+
+/* =====================================================================
+   8. EVENTS
+   ===================================================================== */
+const incomeInput = $("incomeInput");
+incomeInput.addEventListener("input", () => { state.income = Math.min(1e9, parseNum(incomeInput.value)); update(); });
+incomeInput.addEventListener("focus", () => incomeInput.select());
+incomeInput.addEventListener("blur", render);
+$("incomeRange").addEventListener("input", (e) => { state.income = +e.target.value; update(); });
+$("incomeChips").addEventListener("click", (e) => {
+  const chip = e.target.closest("[data-chip]");
+  if (chip) { state.income = +chip.dataset.chip; update(); }
+});
+$("bracketsBody").addEventListener("click", (e) => {     // rows map to income only when reliefs are off
+  const row = e.target.closest("[data-band]");
+  if (!row || state.reliefsOn) return;
+  const [from, to] = BANDS[+row.dataset.band];
+  state.income = to === Infinity ? from + 500000 : Math.round((from + to) / 2000) * 1000;
+  update();
+  $("resultCard").scrollIntoView({ behavior: "smooth", block: "center" });
+});
+document.querySelectorAll("[data-lang]").forEach((b) => b.addEventListener("click", () => {
+  state.lang = b.dataset.lang; save(); applyStaticText(); render();
+}));
+
+// Tax reliefs panel
+$("reliefToggle").addEventListener("change", (e) => { state.reliefsOn = e.target.checked; $("reliefPanel").hidden = !state.reliefsOn; update(); });
+const panel = $("reliefPanel");
+panel.addEventListener("input", (e) => {
+  const el = e.target;
+  if (el.dataset.ded) state.ded[el.dataset.ded] = Math.min(ITEMS[el.dataset.ded].cap, parseNum(el.value));   // workbook rejects amounts above the limit
+  else if (el.id === "houseAmt") state.house.amt = Math.min(HOUSE_CAP[state.house.band], parseNum(el.value));
+  else return;
+  update();
+});
+panel.addEventListener("focusout", (e) => {             // show the capped, formatted value
+  const el = e.target;
+  if (el.dataset.ded) { const v = itemValue(ITEMS[el.dataset.ded], state); el.value = v ? fmt(v) : ""; }
+  else if (el.id === "houseAmt") el.value = state.house.amt ? fmt(state.house.amt) : "";
+});
+panel.addEventListener("change", (e) => {
+  const el = e.target;
+  if (el.dataset.check) state.ded[el.dataset.check] = el.checked;
+  else if (el.dataset.houseBand) {
+    state.house.band = el.dataset.houseBand;
+    state.house.amt = Math.min(HOUSE_CAP[state.house.band], state.house.amt);
+    $("houseAmt").value = state.house.amt ? fmt(state.house.amt) : "";
+  } else return;
+  update();
+});
+panel.addEventListener("click", (e) => {
+  const step = e.target.closest("[data-step]");
+  if (step) {
+    const box = step.closest(".stepper"), col = +box.dataset.col, counts = state.kids[box.dataset.kid];
+    counts[col] = Math.max(0, Math.min(20, counts[col] + +step.dataset.step));
+    box.querySelector("output").textContent = counts[col];
+    box.querySelector('[data-step="-1"]').disabled = counts[col] === 0;
+    box.classList.toggle("has-val", counts[col] > 0);
+    update();
+    return;
+  }
+  const auto = e.target.closest("[data-auto]");
+  if (auto) {
+    const id = auto.dataset.auto;
+    state.ded[id] = AUTO_FILL[ITEMS[id].auto](state.income);
+    $("d-" + id).value = fmt(state.ded[id]);
+    update();
+    return;
+  }
+  if (e.target.closest("#reliefReset")) {
+    Object.assign(state, { ded: {}, kids: freshKids(), house: { band: "500", amt: 0 } });
+    buildReliefPanel();
+    update();
+  }
+});
+panel.addEventListener("toggle", (e) => {                 // remember which categories are open
+  const g = e.target.dataset?.group;
+  if (g) e.target.open ? openGroups.add(g) : openGroups.delete(g);
+}, true);
+
+// Result tabs + "My tax" view
+document.querySelector(".tabs").addEventListener("click", (e) => {
+  const tab = e.target.closest("[data-tab]");
+  if (tab) { state.tab = tab.dataset.tab; update(); }
+});
+$("viewTax").addEventListener("click", (e) => {
+  if (e.target.closest("#tvEnable")) {
+    state.reliefsOn = true;
+    buildReliefPanel();
+    update();
+    document.querySelector(".reliefs").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+});
+
+// Header
+const header = $("header");
+const onScroll = () => header.classList.toggle("is-compact", window.scrollY > 12);
+window.addEventListener("scroll", onScroll, { passive: true });
+$("menuBtn").addEventListener("click", () => {
+  const open = !$("mobileMenu").classList.contains("is-open");
+  $("mobileMenu").classList.toggle("is-open", open);
+  header.classList.toggle("menu-open", open);
+  $("menuBtn").setAttribute("aria-expanded", String(open));
+  $("menuBtn").innerHTML = icon(open ? "i-x" : "i-menu", 22);
+});
+
+// Analytics (fires only when gtag is on the page)
+document.querySelectorAll("[data-track]").forEach((a) => a.addEventListener("click", () => {
+  if (typeof window.gtag === "function") window.gtag("event", "tax_calc_" + a.dataset.track, { saving: Math.round(result.saving), reliefs: state.reliefsOn });
+}));
+
+/* INIT */
+applyStaticText();
+render();
+onScroll();
+</script>
+</body>
+</html>

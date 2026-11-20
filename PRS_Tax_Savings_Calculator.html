@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malaysia PRS Tax Savings Calculator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom styling for range inputs */
+        input[type=range] {
+            accent-color: #16a34a;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased text-slate-800 min-h-full flex flex-col bg-slate-50">
+
+    <!-- Header / Navbar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-md shadow-emerald-200">
+                    <i class="fa-solid fa-[#16a34a] fa-piggy-bank text-xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-slate-900 text-lg sm:text-xl leading-tight">PRS Tax Savings Calculator</h1>
+                    <p class="text-xs text-slate-500">Malaysia LHDN Personal Income Tax Relief (YA 2024–2030)</p>
+                </div>
+            </div>
+            <div class="hidden sm:flex items-center space-x-2 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full text-xs font-semibold border border-emerald-200">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>Max RM3,000 Relief Capped</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        
+        <!-- Info Banner -->
+        <div class="bg-gradient-to-r from-emerald-900 via-teal-800 to-slate-900 rounded-2xl p-5 sm:p-6 text-white mb-8 shadow-lg relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+                <i class="fa-solid fa-chart-line text-[200px]"></i>
+            </div>
+            <div class="relative z-10 max-w-3xl">
+                <span class="inline-block px-2.5 py-0.5 rounded text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 mb-2">LHDN Official Relief Rule</span>
+                <h2 class="text-xl sm:text-2xl font-bold tracking-tight mb-2">Turn Your Tax Dollars into Long-term Wealth</h2>
+                <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+                    Under the Malaysian tax framework, contributions to Private Retirement Schemes (PRS) qualify for a individual tax relief up to <strong class="text-emerald-300">RM3,000 per year</strong> until Year of Assessment (YA) 2030. Enjoy an immediate guaranteed tax return equal to your marginal tax bracket rate!
+                </p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- LEFT PANEL: CONTROLS & INPUTS (5 Cols) -->
+            <div class="lg:col-span-5 space-y-6">
+                
+                <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-6">
+                    <h3 class="font-bold text-slate-900 text-lg border-b border-slate-100 pb-3 flex items-center justify-between">
+                        <span>1. Calculate Inputs</span>
+                        <button id="resetBtn" class="text-xs text-slate-400 hover:text-emerald-600 transition flex items-center space-x-1 font-normal">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            <span>Reset</span>
+                        </button>
+                    </h3>
+
+                    <!-- PRS Contribution Input -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label for="prsInput" class="text-sm font-semibold text-slate-700">Annual PRS Contribution</label>
+                            <span class="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg" id="prsDisplay">RM 3,000</span>
+                        </div>
+                        <input type="range" id="prsSlider" min="100" max="10000" step="100" value="3000" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                        
+                        <div class="relative mt-2">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 text-sm">RM</div>
+                            <input type="number" id="prsInput" value="3000" min="0" max="100000" class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-800">
+                        </div>
+
+                        <!-- PRS Limit Alert -->
+                        <div id="prsLimitWarning" class="hidden mt-2 p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-xs flex items-start space-x-2">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-500 mt-0.5 flex-shrink-0"></i>
+                            <span>Contributions exceeding <strong>RM3,000</strong> are welcome for retirement growth, but your LHDN tax relief is capped at <strong>RM3,000</strong>.</span>
+                        </div>
+                    </div>
+
+                    <!-- Income Selection Mode Tabs -->
+                    <div class="pt-2 border-t border-slate-100">
+                        <label class="text-sm font-semibold text-slate-700 block mb-2">2. Annual Chargeable Income / Tax Bracket</label>
+                        
+                        <!-- Toggle -->
+                        <div class="grid grid-cols-2 gap-1 bg-slate-100 p-1 rounded-xl mb-4">
+                            <button type="button" id="tabIncome" class="py-1.5 text-xs font-semibold rounded-lg bg-white shadow-sm text-slate-800 transition">Enter Income</button>
+                            <button type="button" id="tabBracket" class="py-1.5 text-xs font-semibold rounded-lg text-slate-500 hover:text-slate-800 transition">Select Tax Rate</button>
+                        </div>
+
+                        <!-- Mode A: Enter Chargeable Income -->
+                        <div id="incomeModeContainer" class="space-y-3">
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 text-sm">RM</div>
+                                <input type="number" id="chargeableIncomeInput" value="75000" min="0" step="1000" placeholder="e.g. 75,000" class="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-800">
+                            </div>
+                            <p class="text-xs text-slate-500">
+                                <i class="fa-solid fa-circle-info mr-1 text-slate-400"></i>
+                                Chargeable Income = Gross Income minus EPF, SOCSO, and other tax exemptions/reliefs.
+                            </p>
+
+                            <!-- Quick Preset Income Buttons -->
+                            <div class="pt-2">
+                                <span class="text-xs text-slate-500 block mb-1.5 font-medium">Quick Income Presets:</span>
+                                <div class="flex flex-wrap gap-1.5">
+                                    <button type="button" data-income="30000" class="preset-btn px-2.5 py-1 text-xs bg-slate-100 hover:bg-emerald-100 hover:text-emerald-800 rounded-lg text-slate-600 transition font-medium">RM 30k</button>
+                                    <button type="button" data-income="50000" class="preset-btn px-2.5 py-1 text-xs bg-slate-100 hover:bg-emerald-100 hover:text-emerald-800 rounded-lg text-slate-600 transition font-medium">RM 50k</button>
+                                    <button type="button" data-income="75000" class="preset-btn px-2.5 py-1 text-xs bg-emerald-600 text-white font-semibold rounded-lg shadow-sm transition">RM 75k</button>
+                                    <button type="button" data-income="120000" class="preset-btn px-2.5 py-1 text-xs bg-slate-100 hover:bg-emerald-100 hover:text-emerald-800 rounded-lg text-slate-600 transition font-medium">RM 120k</button>
+                                    <button type="button" data-income="250000" class="preset-btn px-2.5 py-1 text-xs bg-slate-100 hover:bg-emerald-100 hover:text-emerald-800 rounded-lg text-slate-600 transition font-medium">RM 250k</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mode B: Direct Bracket Select -->
+                        <div id="bracketModeContainer" class="hidden space-y-3">
+                            <select id="bracketSelect" class="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-800 bg-white">
+                                <!-- Populated dynamically by JS -->
+                            </select>
+                            <p class="text-xs text-slate-500">Directly pick your highest applicable LHDN personal income tax rate.</p>
+                        </div>
+                    </div>
+
+                    <!-- Current Bracket Information Box -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-slate-500">Identified Tax Rate:</span>
+                            <span id="detectedTaxRate" class="font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">19.0%</span>
+                        </div>
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-slate-500">LHDN Chargeable Income Band:</span>
+                            <span id="detectedIncomeBand" class="font-semibold text-slate-800">RM 70,001 - RM 100,000</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Educational Quick Card -->
+                <div class="bg-emerald-50/60 border border-emerald-100 rounded-2xl p-5 text-xs text-emerald-900 space-y-2">
+                    <h4 class="font-bold text-emerald-800 text-sm flex items-center">
+                        <i class="fa-solid fa-lightbulb text-amber-500 mr-2"></i>
+                        Smart Tax Tip
+                    </h4>
+                    <p class="leading-relaxed">
+                        Tax savings act as an <strong>instant guaranteed discount</strong> on your investment. If your tax rate is 25%, investing RM3,000 into PRS effectively costs you only RM2,250, while you keep the full RM3,000 accumulating compound returns in your retirement account!
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- RIGHT PANEL: DASHBOARD & RESULTS (7 Cols) -->
+            <div class="lg:col-span-7 space-y-6">
+                
+                <!-- SUMMARY STAT CARDS -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    
+                    <!-- Card 1: Annual Tax Savings -->
+                    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm relative overflow-hidden flex flex-col justify-between">
+                        <div class="absolute top-0 right-0 w-2 h-full bg-emerald-500"></div>
+                        <div>
+                            <span class="text-xs font-medium text-slate-500 block mb-1">Annual Tax Savings</span>
+                            <div class="text-2xl sm:text-3xl font-extrabold text-emerald-600 tracking-tight" id="resTaxSavings">RM 570</div>
+                        </div>
+                        <div class="mt-3 text-[11px] text-slate-500 flex items-center">
+                            <i class="fa-solid fa-arrow-down-long text-emerald-500 mr-1"></i>
+                            <span>Direct Tax Reduction</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Effective Immediate ROI -->
+                    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm relative overflow-hidden flex flex-col justify-between">
+                        <div class="absolute top-0 right-0 w-2 h-full bg-teal-500"></div>
+                        <div>
+                            <span class="text-xs font-medium text-slate-500 block mb-1">Immediate Effective ROI</span>
+                            <div class="text-2xl sm:text-3xl font-extrabold text-teal-600 tracking-tight" id="resRoi">19.0%</div>
+                        </div>
+                        <div class="mt-3 text-[11px] text-slate-500 flex items-center">
+                            <i class="fa-solid fa-bolt text-amber-500 mr-1"></i>
+                            <span>Guaranteed Year 1 Return</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Net Cost of Investment -->
+                    <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm relative overflow-hidden flex flex-col justify-between">
+                        <div class="absolute top-0 right-0 w-2 h-full bg-indigo-500"></div>
+                        <div>
+                            <span class="text-xs font-medium text-slate-500 block mb-1">Net Investment Cost</span>
+                            <div class="text-2xl sm:text-3xl font-extrabold text-indigo-600 tracking-tight" id="resNetCost">RM 2,430</div>
+                        </div>
+                        <div class="mt-3 text-[11px] text-slate-500 flex items-center">
+                            <i class="fa-solid fa-piggy-bank text-indigo-400 mr-1"></i>
+                            <span>For RM 3,000 In Retirement</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- VISUALIZATION: Breakdown Chart & Breakdown Cards -->
+                <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                        <h3 class="font-bold text-slate-900 text-base flex items-center">
+                            <i class="fa-solid fa-chart-pie text-emerald-600 mr-2"></i>
+                            Contribution Breakdown
+                        </h3>
+                        <span id="resClaimableRelief" class="text-xs font-semibold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full">Claimable Relief: RM 3,000</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div class="h-56 relative flex items-center justify-center">
+                            <canvas id="breakdownChart"></canvas>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-3 h-3 rounded-full bg-slate-400"></div>
+                                    <span class="text-xs font-medium text-slate-600">Gross Contribution</span>
+                                </div>
+                                <span class="text-xs font-bold text-slate-900" id="legendGross">RM 3,000</span>
+                            </div>
+
+                            <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-100 flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+                                    <span class="text-xs font-semibold text-emerald-900">Tax Savings (Government)</span>
+                                </div>
+                                <span class="text-xs font-bold text-emerald-700" id="legendSavings">RM 570</span>
+                            </div>
+
+                            <div class="p-3 bg-indigo-50 rounded-xl border border-indigo-100 flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-3 h-3 rounded-full bg-indigo-600"></div>
+                                    <span class="text-xs font-semibold text-indigo-900">Actual Out-of-Pocket Cost</span>
+                                </div>
+                                <span class="text-xs font-bold text-indigo-700" id="legendNet">RM 2,430</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ALL BRACKETS COMPARISON TABLE -->
+                <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                        <div>
+                            <h3 class="font-bold text-slate-900 text-base">Tax Savings Across All Income Brackets</h3>
+                            <p class="text-xs text-slate-500">Based on LHDN Malaysia YA 2024/2025/2026 Tax Rates</p>
+                        </div>
+                        <span class="text-xs text-slate-400">Values based on selected RM <span id="tablePrsVal">3,000</span> contribution</span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
+                                    <th class="py-2.5 px-3">Chargeable Income Band (RM)</th>
+                                    <th class="py-2.5 px-3 text-center">Tax Rate</th>
+                                    <th class="py-2.5 px-3 text-right">Tax Savings</th>
+                                    <th class="py-2.5 px-3 text-right">Effective ROI</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bracketsTableBody" class="divide-y divide-slate-100">
+                                <!-- Populated dynamically by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 mt-12 py-6">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 space-y-2">
+            <p><strong>Disclaimer:</strong> This calculator is designed for estimation purposes based on standard Inland Revenue Board of Malaysia (LHDN) personal tax rate brackets. Individual tax liabilities may vary depending on personal tax reliefs, rebates, and residency status.</p>
+            <p>© Private Retirement Scheme Tax Relief Guide — Reference YA 2024–2030 Rules (Section 49 and 50 of ITA 1967).</p>
+        </div>
+    </footer>
+
+    <!-- LOGIC & SCRIPTS -->
+    <script>
+        // LHDN Personal Income Tax Brackets (Malaysia YA 2024/2025/2026)
+        const LHDN_BRACKETS = [
+            { min: 0, max: 5000, rate: 0.00, label: "0 - 5,000" },
+            { min: 5001, max: 20000, rate: 0.01, label: "5,001 - 20,000" },
+            { min: 20001, max: 35000, rate: 0.03, label: "20,001 - 35,000" },
+            { min: 35001, max: 50000, rate: 0.06, label: "35,001 - 50,000" },
+            { min: 50001, max: 70000, rate: 0.11, label: "50,001 - 70,000" },
+            { min: 70001, max: 100000, rate: 0.19, label: "70,001 - 100,000" },
+            { min: 100001, max: 400000, rate: 0.25, label: "100,001 - 400,000" },
+            { min: 400001, max: 600000, rate: 0.26, label: "400,001 - 600,000" },
+            { min: 600001, max: 2000000, rate: 0.28, label: "600,001 - 2,000,000" },
+            { min: 2000001, max: Infinity, rate: 0.30, label: "Exceeding 2,000,000" }
+        ];
+
+        const MAX_RELIEF = 3000;
+
+        // UI Element References
+        const prsSlider = document.getElementById('prsSlider');
+        const prsInput = document.getElementById('prsInput');
+        const prsDisplay = document.getElementById('prsDisplay');
+        const prsLimitWarning = document.getElementById('prsLimitWarning');
+        
+        const tabIncome = document.getElementById('tabIncome');
+        const tabBracket = document.getElementById('tabBracket');
+        const incomeModeContainer = document.getElementById('incomeModeContainer');
+        const bracketModeContainer = document.getElementById('bracketModeContainer');
+        
+        const chargeableIncomeInput = document.getElementById('chargeableIncomeInput');
+        const bracketSelect = document.getElementById('bracketSelect');
+        const presetBtns = document.querySelectorAll('.preset-btn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        const detectedTaxRate = document.getElementById('detectedTaxRate');
+        const detectedIncomeBand = document.getElementById('detectedIncomeBand');
+
+        const resTaxSavings = document.getElementById('resTaxSavings');
+        const resRoi = document.getElementById('resRoi');
+        const resNetCost = document.getElementById('resNetCost');
+        const resClaimableRelief = document.getElementById('resClaimableRelief');
+
+        const legendGross = document.getElementById('legendGross');
+        const legendSavings = document.getElementById('legendSavings');
+        const legendNet = document.getElementById('legendNet');
+        const tablePrsVal = document.getElementById('tablePrsVal');
+        const bracketsTableBody = document.getElementById('bracketsTableBody');
+
+        let currentMode = 'income'; // 'income' or 'bracket'
+        let chartInstance = null;
+
+        // Populate Dropdown for Bracket Mode
+        function initBracketSelect() {
+            bracketSelect.innerHTML = '';
+            LHDN_BRACKETS.forEach((b, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `RM ${b.label} (${(b.rate * 100).toFixed(1)}%)`;
+                if (b.rate === 0.19) option.selected = true; // Default to 19%
+                bracketSelect.appendChild(option);
+            });
+        }
+
+        // Helper: Format RM currency
+        function formatRM(val) {
+            return 'RM ' + Math.round(val).toLocaleString('en-MY');
+        }
+
+        // Get Bracket from Income
+        function getBracketFromIncome(income) {
+            const numericIncome = parseFloat(income) || 0;
+            return LHDN_BRACKETS.find(b => numericIncome >= b.min && numericIncome <= b.max) || LHDN_BRACKETS[LHDN_BRACKETS.length - 1];
+        }
+
+        // Core Calculation Function
+        function calculate() {
+            const prsContribution = Math.max(0, parseFloat(prsInput.value) || 0);
+            
+            // Show/Hide Warning
+            if (prsContribution > MAX_RELIEF) {
+                prsLimitWarning.classList.remove('hidden');
+            } else {
+                prsLimitWarning.classList.add('hidden');
+            }
+
+            // Determine Tax Rate Bracket
+            let activeBracket;
+            if (currentMode === 'income') {
+                const income = parseFloat(chargeableIncomeInput.value) || 0;
+                activeBracket = getBracketFromIncome(income);
+            } else {
+                const bracketIdx = parseInt(bracketSelect.value, 10) || 0;
+                activeBracket = LHDN_BRACKETS[bracketIdx];
+            }
+
+            // Calculations
+            const claimableRelief = Math.min(prsContribution, MAX_RELIEF);
+            const taxSavings = claimableRelief * activeBracket.rate;
+            const netCost = prsContribution - taxSavings;
+            const effectiveRoi = prsContribution > 0 ? (taxSavings / prsContribution) * 100 : 0;
+
+            // Render Results
+            prsDisplay.textContent = formatRM(prsContribution);
+            detectedTaxRate.textContent = `${(activeBracket.rate * 100).toFixed(1)}%`;
+            detectedIncomeBand.textContent = `RM ${activeBracket.label}`;
+
+            resTaxSavings.textContent = formatRM(taxSavings);
+            resRoi.textContent = `${effectiveRoi.toFixed(1)}%`;
+            resNetCost.textContent = formatRM(netCost);
+            resClaimableRelief.textContent = `Claimable Relief: ${formatRM(claimableRelief)}`;
+
+            legendGross.textContent = formatRM(prsContribution);
+            legendSavings.textContent = formatRM(taxSavings);
+            legendNet.textContent = formatRM(netCost);
+            tablePrsVal.textContent = Math.round(prsContribution).toLocaleString('en-MY');
+
+            updateChart(taxSavings, netCost);
+            updateTable(activeBracket, prsContribution);
+        }
+
+        // Chart Renderer using Chart.js
+        function updateChart(taxSavings, netCost) {
+            const ctx = document.getElementById('breakdownChart').getContext('2d');
+            
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Tax Savings (Govt Subsidy)', 'Net Out-of-Pocket Cost'],
+                    datasets: [{
+                        data: [taxSavings, netCost],
+                        backgroundColor: ['#10b981', '#4f46e5'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.raw || 0;
+                                    return ` ${context.label}: RM ${Math.round(value).toLocaleString('en-MY')}`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '72%'
+                }
+            });
+        }
+
+        // Populate Bracket Comparison Table
+        function updateTable(activeBracket, prsContribution) {
+            bracketsTableBody.innerHTML = '';
+            const claimable = Math.min(prsContribution, MAX_RELIEF);
+
+            LHDN_BRACKETS.forEach(b => {
+                const savings = claimable * b.rate;
+                const roi = prsContribution > 0 ? (savings / prsContribution) * 100 : 0;
+                const isActive = (b.label === activeBracket.label);
+
+                const tr = document.createElement('tr');
+                tr.className = isActive ? 'bg-emerald-50/80 font-bold border-l-4 border-emerald-500' : 'hover:bg-slate-50/80 text-slate-700';
+
+                tr.innerHTML = `
+                    <td class="py-2.5 px-3 flex items-center space-x-1.5">
+                        <span>RM ${b.label}</span>
+                        ${isActive ? '<span class="text-[10px] bg-emerald-600 text-white px-1.5 py-0.5 rounded font-normal">Current</span>' : ''}
+                    </td>
+                    <td class="py-2.5 px-3 text-center font-semibold">${(b.rate * 100).toFixed(1)}%</td>
+                    <td class="py-2.5 px-3 text-right font-semibold text-emerald-600">${formatRM(savings)}</td>
+                    <td class="py-2.5 px-3 text-right text-slate-600">${roi.toFixed(1)}%</td>
+                `;
+                bracketsTableBody.appendChild(tr);
+            });
+        }
+
+        // Event Listeners
+        prsSlider.addEventListener('input', (e) => {
+            prsInput.value = e.target.value;
+            calculate();
+        });
+
+        prsInput.addEventListener('input', (e) => {
+            prsSlider.value = e.target.value;
+            calculate();
+        });
+
+        chargeableIncomeInput.addEventListener('input', calculate);
+        bracketSelect.addEventListener('change', calculate);
+
+        // Tab Mode Toggles
+        tabIncome.addEventListener('click', () => {
+            currentMode = 'income';
+            tabIncome.classList.add('bg-white', 'shadow-sm', 'text-slate-800');
+            tabIncome.classList.remove('text-slate-500');
+            tabBracket.classList.remove('bg-white', 'shadow-sm', 'text-slate-800');
+            tabBracket.classList.add('text-slate-500');
+
+            incomeModeContainer.classList.remove('hidden');
+            bracketModeContainer.classList.add('hidden');
+            calculate();
+        });
+
+        tabBracket.addEventListener('click', () => {
+            currentMode = 'bracket';
+            tabBracket.classList.add('bg-white', 'shadow-sm', 'text-slate-800');
+            tabBracket.classList.remove('text-slate-500');
+            tabIncome.classList.remove('bg-white', 'shadow-sm', 'text-slate-800');
+            tabIncome.classList.add('text-slate-500');
+
+            bracketModeContainer.classList.remove('hidden');
+            incomeModeContainer.classList.add('hidden');
+            calculate();
+        });
+
+        // Preset Income Buttons
+        presetBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                presetBtns.forEach(b => {
+                    b.classList.remove('bg-emerald-600', 'text-white', 'shadow-sm');
+                    b.classList.add('bg-slate-100', 'text-slate-600');
+                });
+                btn.classList.remove('bg-slate-100', 'text-slate-600');
+                btn.classList.add('bg-emerald-600', 'text-white', 'shadow-sm');
+
+                const incomeVal = btn.getAttribute('data-income');
+                chargeableIncomeInput.value = incomeVal;
+                
+                // If currently on bracket mode, switch back to income mode
+                if (currentMode === 'bracket') {
+                    tabIncome.click();
+                } else {
+                    calculate();
+                }
+            });
+        });
+
+        // Reset Button
+        resetBtn.addEventListener('click', () => {
+            prsSlider.value = 3000;
+            prsInput.value = 3000;
+            chargeableIncomeInput.value = 75000;
+            if (currentMode === 'bracket') tabIncome.click();
+            calculate();
+        });
+
+        // Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            initBracketSelect();
+            calculate();
+        });
+    </script>
+</body>
+</html>
